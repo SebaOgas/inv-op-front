@@ -1,0 +1,148 @@
+:root {
+    --lighter: white;
+    --light: teal;
+    --dark: navy;
+    --darker: black;
+    --font-size: 12pt;
+    --font-family: Tahoma, Verdana, Arial;
+    --radius: 4px;
+}
+
+body {
+    color: var(--darker) !important;
+    background-color: var(--lighter) !important;
+    font-size: var(--font-size) !important;
+    font-weight: normal;
+    font-family: var(--font-family);
+}
+
+::selection {
+    color: var(--lighter);
+    background-color: var(--dark);
+}
+
+a {
+    color: var(--darker) !important;
+    outline: none;
+}
+
+a:focus {
+    filter: brightness(1.1);
+}
+
+.text-lighter {
+    color: var(--lighter) !important;
+}
+.text-light {
+    color: var(--light) !important;
+}
+.text-dark {
+    color: var(--dark) !important;
+}
+.text-darker {
+    color: var(--darker) !important;
+}
+
+.bg-lighter {
+    background-color: var(--lighter) !important;
+}
+.bg-light {
+    background-color: var(--light) !important;
+}
+.bg-dark {
+    background-color: var(--dark) !important;
+}
+.bg-darker {
+    background-color: var(--darker) !important;
+}
+.bg-darker::selection {
+    background-color: var(--lighter);
+    color: var(--darker);
+}
+
+.text-s {
+    font-size: calc(var(--font-size) - 2pt);
+}
+.text-m {
+    font-size: calc(var(--font-size));
+}
+.text-l {
+    font-size: calc(var(--font-size) + 2pt);
+}
+.text-xl {
+    font-size: calc(var(--font-size) + 8pt);
+}
+.text-xxl {
+    font-size: calc(var(--font-size) + 16pt);
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+button, input[type="button"], input[type="submit"] {
+    border-radius: var(--radius);
+    border-width: 0;
+    outline: 0;
+    font-size: var(--font-size);
+}
+
+button:active, input[type="button"]:active, input[type="submit"]:active {
+    filter: brightness(0.9);
+}
+
+button:hover, button:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus {
+    filter: brightness(1.1);
+    transform: scale(1.1);
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+    border-radius: var(--radius);
+    border: 1px solid var(--darker);
+    outline: 0;
+    background-color: var(--lighter);
+    font-size: var(--font-size);
+}
+
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+  
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+   
+::-webkit-scrollbar-thumb {
+    background: var(--darker); 
+    border-radius: var(--radius);
+}
+  
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark); 
+}
+
+table thead tr {
+    border-bottom: 1px solid var(--darker);
+}
+
+table th {
+    font-weight: bold;
+}
+
+table th, table td {
+    text-align: center;
+}
+
+table tr>*:last-child {
+    text-align: right;
+}
+
+table tr>*:first-child {
+    text-align: left;
+}
