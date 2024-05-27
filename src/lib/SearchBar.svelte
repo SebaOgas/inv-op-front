@@ -28,7 +28,7 @@
         border-radius: 4px;
         border: 1px solid var(--darker);
         background-color: var(--lighter);
-        font-size: 12px;
+        font-size: var(--font-size);
     }
 
     .searchbar>input[type=text] {

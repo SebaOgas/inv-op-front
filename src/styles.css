@@ -1,8 +1,8 @@
 :root {
-    --lighter: white;
-    --light: teal;
-    --dark: navy;
-    --darker: black;
+    --lighter: #f1faee;
+    --light: #a8dadc;
+    --dark: #457b9d;
+    --darker: #1d3557;
     --font-size: 12pt;
     --font-family: Tahoma, Verdana, Arial;
     --radius: 4px;
@@ -28,6 +28,12 @@ a {
 
 a:focus {
     filter: brightness(1.1);
+}
+
+hr {
+    border: 0;
+    border-top: 2px solid var(--dark);
+    opacity: 1;
 }
 
 .text-lighter {
@@ -85,17 +91,23 @@ a:focus {
 }
 
 button, input[type="button"], input[type="submit"] {
+    background-color: var(--light);
+    color: var(--darker);
     border-radius: var(--radius);
     border-width: 0;
     outline: 0;
     font-size: var(--font-size);
 }
 
-button:active, input[type="button"]:active, input[type="submit"]:active {
+button:disabled, input[type="button"]:disabled, input[type="submit"]:disabled {
+    filter: brightness(0.8);
+}
+
+button:active:not(:disabled), input[type="button"]:active:not(:disabled), input[type="submit"]:active:not(:disabled) {
     filter: brightness(0.9);
 }
 
-button:hover, button:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus {
+button:hover:not(:disabled), button:focus:not(:disabled), input[type="button"]:hover:not(:disabled), input[type="button"]:focus:not(:disabled), input[type="submit"]:hover:not(:disabled), input[type="submit"]:focus:not(:disabled) {
     filter: brightness(1.1);
     transform: scale(1.1);
 }
@@ -131,18 +143,14 @@ table thead tr {
     border-bottom: 1px solid var(--darker);
 }
 
+table tfoot {
+    border-top: 1px solid var(--darker);
+}
+
 table th {
     font-weight: bold;
 }
 
 table th, table td {
     text-align: center;
-}
-
-table tr>*:last-child {
-    text-align: right;
-}
-
-table tr>*:first-child {
-    text-align: left;
 }

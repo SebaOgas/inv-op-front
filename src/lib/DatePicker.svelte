@@ -94,6 +94,7 @@
         border-width: 0;
         height: 100%;
         flex: 1 1 auto;
+        width: 100%;
     }
 
     .datepicker>img {

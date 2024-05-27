@@ -16,7 +16,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="combobox" on:click={toggleShown} style="width: {width >= 0 ? width + "%" : "fit-content"}">
     <div class="value">
-        <span class="ph" style="display: {value === "" ? "block" : "none"};">{placeholder}</span>
+        <span class="ph ps-1" style="display: {value === "" ? "block" : "none"};">{placeholder}</span>
         <span>{value}</span>
         <div class="options bg-lighter" style="display: {shown ? "flex" : "none"};">
             <slot/>
@@ -34,7 +34,7 @@
     }
 
     .combobox {
-        font-size: 12px;
+        font-size: var(--font-size);
         background-color: var(--lighter);
         color: var(--darker);
         border-radius: 4px;
@@ -44,6 +44,8 @@
         justify-content: space-between;
         align-items: center;
         position: relative;
+        z-index: 1;
+        cursor: default;
     }
 
     @media (max-width: 575px) {
@@ -53,7 +55,7 @@
     }
 
     .ph {
-        color: var(--dark);
+        color: grey;
     }
 
     img {

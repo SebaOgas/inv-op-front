@@ -1,30 +1,32 @@
-
 <script lang="ts">
-    function redirect(url: string) {
+    function redir(url: string) {
         window.location.href = url;
     }
 </script>
 
-<h1>Sistema de Manejo de Inventarios</h1>
+<div class="container-fluid">
+    <h1>Sistema de Manejo de Inventarios</h1>
 
-<h2>Investigación Operativa</h2>
+    <button on:click={() => {redir("MaestroDeArticulos")}}>Maestro de Artículos</button>
+    <button on:click={() => {redir("Inventario")}}>Inventario</button>
+    <button on:click={() => {redir("OrdenDeCompra")}}>Orden De Compra</button>
+    <button on:click={() => {redir("Demanda")}}>Demanda</button>
+    <button on:click={() => {redir("Ventas")}}>Ventas</button>
 
-<h3>Grupo 9</h3>
+    <hr>
 
-<div>
-    <strong>Integrantes:</strong>
-    <ul>
-        <li>Burgos, Lucca</li>
-        <li>Carrizo, Martina</li>
-        <li>Ogás, Sebastián</li>
-        <li>Palladino, Facundo</li>
-    </ul>
+    <h2>Investigación Operativa</h2>
+
+    <h3>Grupo 9</h3>
+
+    <div>
+        <strong>Integrantes:</strong>
+        <ul>
+            <li>Burgos, Lucca</li>
+            <li>Carrizo, Martina</li>
+            <li>Ogás, Sebastián</li>
+            <li>Palladino, Facundo</li>
+        </ul>
+    </div>
 </div>
 
-<div>
-    <button on:click={() => {redirect("MaestroDeArticulos")}}>Maestro de Artículos</button>
-    <button on:click={() => {redirect("Inventario")}}>Inventario</button>
-    <button on:click={() => {redirect("OrdenDeCompra")}}>Orden De Compra</button>
-    <button on:click={() => {redirect("Demanda")}}>Demanda</button>
-    <button on:click={() => {redirect("Ventas")}}>Ventas</button>
-</div>
