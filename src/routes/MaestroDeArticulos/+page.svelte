@@ -6,10 +6,8 @@ function redir(url: string) {
 function confirmarEliminar() {
     const confirmacion = confirm("¿Estás seguro de que deseas eliminar este elemento?");
     if (confirmacion) {
-      // Aquí puedes agregar la lógica para eliminar el elemento
       alert("Elemento eliminado correctamente.");
     } else {
-
     }
   }
 
@@ -42,7 +40,6 @@ function confirmarEliminar() {
                 <td>Monto Fijo</td>
                 <td>$ 1000</td>
                 <td>
-                    <!-- Botones de modificar, ver y eliminar -->
                     <button on:click={() => redir("Modificar")}>Modificar</button>
                     <button on:click={() => redir("Ver")}>Ver</button>
                     <button on:click={confirmarEliminar} style="background-color: red;">Eliminar</button>

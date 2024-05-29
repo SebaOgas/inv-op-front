@@ -10,7 +10,6 @@
 
             alert("Elemento eliminado correctamente."); 
         } else {
-
         }
     }
 </script>

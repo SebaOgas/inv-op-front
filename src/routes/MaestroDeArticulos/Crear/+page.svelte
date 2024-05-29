@@ -5,7 +5,6 @@
         window.location.href = "/MaestroDeArticulos/" + url;
     }
   
-    
 </script>
 
 <div>
