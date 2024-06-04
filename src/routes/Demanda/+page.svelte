@@ -3,6 +3,54 @@
 	import ComboBox from "$lib/ComboBox.svelte";
 	import DatePicker from "$lib/DatePicker.svelte";
 	import XyGraph, {type XYFunction} from "$lib/XYGraph.svelte";
+	import { onMount } from "svelte";
+    import type DTODemandPredictionModel from "./DTODemandPredictionModel";
+	import { DemandaService } from "./DemandaService";
+
+
+    let models: DTODemandPredictionModel[] = [];
+
+    onMount(() => {
+        getModels();
+    });
+
+    async function getModels() {
+        models = await DemandaService.model.get();
+    }
+
+    function addModel(type: string) {
+        let num = 1;
+        models.forEach(m => {
+            if (m.type === type) num++;
+        });
+        let model : DTODemandPredictionModel = {
+			id: null,
+			type: type,
+			color: "gray",
+			num: num,
+			ponderations: "",
+			alhpa: 0,
+			root: 0,
+			ignorePeriods: 0,
+			length: 0,
+			count: 0,
+			expectedDemand: 0
+		};
+
+        models = [...models, model];    
+    }
+
+    async function putModel(model: DTODemandPredictionModel) {
+        await DemandaService.model.put(model);
+    }
+
+    async function deleteModel(model: DTODemandPredictionModel) {
+        models = models.filter(m => {
+            return m.id !== model.id;
+        });
+        if(model.id === null) return;
+        await DemandaService.model.delete(model.id);
+    }
 
     let fns : XYFunction[] = [
         {
@@ -44,48 +92,38 @@
 </div>
 
 <div class="container-fluid">
-    <div class="prediccion d-flex flex-row justify-content-between">
-        <div>
-            <strong>PMP 1</strong>
-            <label>Ponderaciones: <input type="text" value="3;2;1"></label>
-            <label>Color: <input type="text" value="blue"></label>
+    {#each models as m}
+        <div class="prediccion d-flex flex-row justify-content-between">
+            <div>
+                <strong>{m.type} {m.num}</strong>
+                {#if m.type === "PMP"}
+                    <label>Ponderaciones: <input type="text" bind:value={m.ponderations}></label>
+                {:else if m.type === "PMSE"}
+                    <label>Raíz: <input type="number" bind:value={m.root} min={0}></label>
+                    <label>α: <input type="number" bind:value={m.alhpa} min={0} max={1} step={0.1}></label>
+                {:else if m.type === "RL"}
+                    <label>Ignorar periodos: <input type="number" bind:value={m.ignorePeriods} min={0}></label>
+                {:else if m.type === "Ix"}
+                    <label>Longitud de ciclo: <input type="number" bind:value={m.length} min={1}></label>
+                    <label>Ciclos anteriores a analizar: <input type="number" bind:value={m.count} min={1}></label>
+                    <label>Demanda esperada siguiente ciclo: <input type="number" bind:value={m.expectedDemand} min={1}></label>
+                {:else}
+                    <span>Tipo de modelo desconocido</span>
+                {/if}
+                <label>Color: <input type="text" bind:value={m.color}></label>
+            </div>
+            <div class="button-container d-flex flex-row justify-content-center align-items-center">
+                <button class="bg-darker text-lighter me-1" on:click={() => putModel(m)}><img src="/save.svg" alt="guardar"></button>
+                <button class="bg-darker text-lighter" on:click={() => deleteModel(m)}>X</button>
+            </div>
         </div>
-        <button class="bg-darker text-lighter">X</button>
-    </div>
-    <div class="prediccion d-flex flex-row justify-content-between">
-        <div>
-            <strong>PMSE 1</strong>
-            <label>Predicciones: <input type="number" value={1} min={0}></label>
-            <label>Raíz: <input type="number" value={0} min={0}></label>
-            <label>α: <input type="number" value={0.5} min={0} max={1} step={0.1}></label>
-            <label>Color: <input type="text" value="red"></label>
-        </div>
-        <button class="bg-darker text-lighter">X</button>
-    </div>
-    <div class="prediccion d-flex flex-row justify-content-between">
-        <div>
-            <strong>RL 1</strong>
-            <label>Predicciones: <input type="number" value={1} min={0}></label>
-            <label>Ignorar periodos: <input type="number" value={0} min={0}></label>
-            <label>Color: <input type="text" value="green"></label>
-        </div>
-        <button class="bg-darker text-lighter">X</button>
-    </div>
-    <div class="prediccion d-flex flex-row justify-content-between">
-        <div>
-            <strong>Ix 1</strong>
-            <label>Longitud de ciclo: <input type="number" value={12} min={1}></label>
-            <label>Ciclos anteriores a analizar: <input type="number" value={3} min={1}></label>
-            <label>Demanda esperada siguiente ciclo: <input type="number" value={3} min={1}></label>
-            <label>Color: <input type="text" value="purple"></label>
-        </div>
-        <button class="bg-darker text-lighter">X</button>
-    </div>
+    {/each}
+    
     <div class="addMetodo d-flex flex-row justify-content-end">
-        <button>+ PMP</button>
-        <button>+ PMSE</button>
-        <button>+ RL</button>
-        <button>+ Ix</button>
+        <button on:click={() => addModel("PMP")}>+ PMP</button>
+        <button on:click={() => addModel("PMSE")}>+ PMSE</button>
+        <button on:click={() => addModel("RL")}>+ RL</button>
+        <button on:click={() => addModel("Ix")}>+ Ix</button>
     </div>
     <h2 class="text-xl">Resultados</h2>
     <XyGraph functions={fns} height={450} yMarks={8} precision={{x: 0, y: 2}}/>
@@ -238,6 +276,14 @@
 
     .highlighted, .highlighted * {
         background-color: var(--light) !important;
+    }
+
+    .button-container>button {
+        flex: 1;
+    }
+
+    .button-container>button>img {
+        height: 14pt;
     }
 
 </style>
