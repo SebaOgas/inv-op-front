@@ -5,6 +5,11 @@
 </script>
 
 <div class="d-flex flex-row justify-content-between mb-2">
+    <span>Cantidad de periodos a predecir</span>
+    <input type="number" min={1} value={1}>
+</div>
+
+<div class="d-flex flex-row justify-content-between mb-2">
     <span>Método de Cálculo de Error</span>
     <ComboBox placeholder="Método de Cálculo">
         <span>Error Medio Cuadrado</span>

@@ -1,5 +1,6 @@
 import type DTODemandaHistoricaAnual from "./CargarDemandasHistoricas/DTODemandaHistoricaAnual";
 import type DTODemandaHistoricaProducto from "./CargarDemandasHistoricas/DTODemandaHistoricaProducto";
+import type DTODemandPredictionModel from "./DTODemandPredictionModel";
 
 const BASE_URL = "http://localhost:8081/invop/demandModule";
 
@@ -48,6 +49,45 @@ export const DemandaService = {
             if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
             const data : DTODemandaHistoricaAnual[] = ret;
             return data;
+        }
+    },
+
+    model: {
+        get: async () : Promise<DTODemandPredictionModel[]> => {
+            const response = await fetch(`${BASE_URL}/model`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            });
+            let ret = await response.json();
+            if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
+            const data : DTODemandPredictionModel[] = ret;
+            return data;
+        },
+        put: async (dto: DTODemandPredictionModel) : Promise<null> => {
+            const response = await fetch(`${BASE_URL}/model`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dto),
+                mode: 'cors'
+            });
+            if (response.status !== 200) {throw new Error("" + response.status + (await response.json()).mensaje)};
+            return null;
+        },
+        delete: async (id: number) : Promise<null> => {
+            const response = await fetch(`${BASE_URL}/model/${id}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            });
+            if (response.status !== 200) {throw new Error("" + response.status + (await response.json()).mensaje)};
+            return null;
         }
     }
     
