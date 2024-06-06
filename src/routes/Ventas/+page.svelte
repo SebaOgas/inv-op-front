@@ -65,7 +65,7 @@
 					<td>{sale.quantity}</td>
 					<!-- <td><a href="/Ventas/{sale.saleId}">Ver</a></td> -->
                     <td><button on:click={onShowPopup}>Ver</button></td>
-                    <Modal open={showPopup} onClosed={(data) => onPopupClose(data, sale)} sale={sale}></Modal>
+                    <Modal open={showPopup} onClosed={(data, sale) => onPopupClose(data, sale)} sale={sale}></Modal>
 				</tr>
 			{/each}
 		{:else}

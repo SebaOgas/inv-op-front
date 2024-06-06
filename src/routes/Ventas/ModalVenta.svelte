@@ -9,7 +9,7 @@
 
 	export let sale: DTOSale;
 
-	const modalClose = (data,sale) => {
+	const modalClose = (data: string ,sale: DTOSale) => {
 		open = false;
 		if (onClosed) {
 			onClosed(data,sale);
@@ -40,7 +40,7 @@
 						class="close"
 						data-dismiss="modal"
 						aria-label="Close"
-						on:click={() => modalClose('close')}
+						on:click={() => modalClose('close', sale)}
 					>
 						<span aria-hidden="true">&times;</span>
 					</button>
