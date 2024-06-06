@@ -5,18 +5,40 @@
 	import XyGraph, {type XYFunction} from "$lib/XYGraph.svelte";
 	import { onMount } from "svelte";
     import type DTODemandPredictionModel from "./DTODemandPredictionModel";
+    import type DTODemandPredictionPeriod from "./DTODemandPredictionPeriod";
 	import { DemandaService } from "./DemandaService";
+	import type DTOProductOrFamily from "./DTOProductOrFamily";
+	import type DTODemandResults from "./DTODemandResults";
+	import { error } from "@sveltejs/kit";
 
 
+    let productsAndFamilies : DTOProductOrFamily[] = [];
+    let productoSeleccionado : DTOProductOrFamily | null = null;
     let models: DTODemandPredictionModel[] = [];
+    let fechaDesde: Date;
+    let resultados : DTODemandResults | null = null;
+    let minMonth : number;
+    let minYear : number;
+    let maxMonth : number;
+    let maxYear : number;
 
-    onMount(() => {
-        getModels();
-    });
-
-    async function getModels() {
-        models = await DemandaService.model.get();
+    async function getProductsAndFamilies(search: string) {
+        productsAndFamilies = await DemandaService.productsAndFamilies.get(search);
+        productoSeleccionado = null;
     }
+
+    async function seleccionarProducto(id: number, family: boolean) {
+        productsAndFamilies.forEach(p => {
+            if(p.id === id && p.family === family) {
+                productoSeleccionado = p;
+                return;
+            }
+        });
+
+        if(productoSeleccionado !== null)
+            models = await DemandaService.model.get(productoSeleccionado.id, productoSeleccionado.family);
+    }
+
 
     function addModel(type: string) {
         let num = 1;
@@ -41,7 +63,14 @@
     }
 
     async function putModel(model: DTODemandPredictionModel) {
-        await DemandaService.model.put(model);
+        if (productoSeleccionado === null) return;
+        let id : number = await DemandaService.model.put(model, productoSeleccionado.id, productoSeleccionado.family);
+        models.forEach(m => {
+            if(m.type === model.type && m.num === model.num) {
+                m.id = id;
+            }
+        })
+        models = models;
     }
 
     async function deleteModel(model: DTODemandPredictionModel) {
@@ -50,6 +79,30 @@
         });
         if(model.id === null) return;
         await DemandaService.model.delete(model.id);
+    }
+
+    async function predict() {
+        if (productoSeleccionado === null) return;
+
+        resultados = await DemandaService.demandPrediction.get(productoSeleccionado.id, productoSeleccionado.family, fechaDesde)
+        minMonth = new Date(fechaDesde).getMonth() + 1;
+        minYear = new Date(fechaDesde).getFullYear();
+        maxMonth = minMonth;
+        maxYear = minYear;
+        resultados.periods.forEach(p => {
+            if(p.year > maxYear || p.year === maxYear && p.month > maxMonth) {
+                maxMonth = p.month;
+                maxYear = p.year;
+            }
+        });
+        resultados.predictions.forEach(pr => {
+            pr.periods.forEach(p => {
+                if(p.year > maxYear || p.year === maxYear && p.month > maxMonth) {
+                    maxMonth = p.month;
+                    maxYear = p.year;
+                }
+            });
+        });
     }
 
     let fns : XYFunction[] = [
@@ -71,23 +124,50 @@
 		},
     ];
 
+    function range(size: number, startAt : number = 0) {
+        return [...Array(size).keys()].map(i => i + startAt);
+    }
+
+    function getPeriods(mes: number, ano: number) : DTODemandPredictionPeriod[] {
+        let ret : DTODemandPredictionPeriod[] = [];
+        if(resultados === null) return [];
+        resultados.predictions.forEach(p => {
+            let per = p.periods.find(p => p.month === mes && p.year === ano);
+            if (per !== undefined) {
+                ret.push(per);
+            } else {
+                ret.push({
+					year: ano,
+					month: mes,
+					prediction: 0,
+					error: null
+				});
+            }
+        });
+        return ret;
+    }
+
 </script>
 
 <div class="filter d-flex flex-row justify-content-between mb-4">
     <div class="filter d-flex flex-row flex-wrap">
-        <SearchBar placeholder="Buscar Artículos o Familias"/>
+        <SearchBar placeholder="Buscar Artículos o Familias" action={getProductsAndFamilies}/>
 
-        <ComboBox placeholder="Artículo/Familia">
-
+        <ComboBox placeholder="Artículo/Familia" value={productoSeleccionado?.name !== undefined ? productoSeleccionado.name : ""}>
+            {#each productsAndFamilies as p}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <span on:click={() => seleccionarProducto(p.id, p.family)}>{p.name}</span>
+            {/each}
         </ComboBox>
 
         <span class="d-flex ms-2">
             <span class="me-2">Analizar desde: </span>
-            <DatePicker width={"150px"}/>
+            <DatePicker width={"150px"} bind:value={fechaDesde}/>
         </span>
     </div>
     <div>
-        <button class="bg-dark text-lighter">Generar Predicciones</button>
+        <button class="bg-dark text-lighter" on:click={predict}>Generar Predicciones</button>
     </div>
 </div>
 
@@ -125,6 +205,8 @@
         <button on:click={() => addModel("RL")}>+ RL</button>
         <button on:click={() => addModel("Ix")}>+ Ix</button>
     </div>
+
+    {#if resultados !== null}
     <h2 class="text-xl">Resultados</h2>
     <XyGraph functions={fns} height={450} yMarks={8} precision={{x: 0, y: 2}}/>
     <div class="overflow-auto mb-4">
@@ -133,96 +215,104 @@
                 <tr>
                     <th rowspan="2">Periodo</th>
                     <th rowspan="2">DR</th>
-                    <th colspan="2">PMP 1</th>
-                    <th colspan="2">PMSE 1</th>
-                    <th colspan="2">RL 1</th>
-                    <th colspan="2">Ix 1</th>
+                    {#each resultados.predictions as p}
+                        <th colspan="2">{p.type} {p.num}</th>
+                    {/each}
                 </tr>
                 <tr>
-                    <th>DP</th>
-                    <th>E</th>
-                    <th>DP</th>
-                    <th>E</th>
-                    <th>DP</th>
-                    <th>E</th>
-                    <th>DP</th>
-                    <th>E</th>
+                    {#each resultados.predictions as p}
+                        <th>DP</th>
+                        <th>E</th>
+                    {/each}
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>01/2024</td>
-                    <td>313</td>
-                    <td>423</td>
-                    <td>321</td>
-                    <td>123</td>
-                    <td>564</td>
-                    <td>342</td>
-                    <td>567</td>
-                    <td>234</td>
-                    <td>468</td>
-                </tr>
-                <tr>
-                    <td>02/2024</td>
-                    <td>313</td>
-                    <td>423</td>
-                    <td>321</td>
-                    <td>123</td>
-                    <td>564</td>
-                    <td>342</td>
-                    <td>567</td>
-                    <td>234</td>
-                    <td>468</td>
-                </tr>
-                <tr>
-                    <td>03/2024</td>
-                    <td>313</td>
-                    <td>423</td>
-                    <td>321</td>
-                    <td>123</td>
-                    <td>564</td>
-                    <td>342</td>
-                    <td>567</td>
-                    <td>234</td>
-                    <td>468</td>
-                </tr>
-                <tr>
-                    <td>04/2024</td>
-                    <td>313</td>
-                    <td>423</td>
-                    <td>321</td>
-                    <td>123</td>
-                    <td>564</td>
-                    <td>342</td>
-                    <td>567</td>
-                    <td>234</td>
-                    <td>468</td>
-                </tr>
-                <tr class="highlighted">
-                    <td>05/2024</td>
-                    <td>313</td>
-                    <td>423</td>
-                    <td>321</td>
-                    <td>123</td>
-                    <td>564</td>
-                    <td>342</td>
-                    <td>567</td>
-                    <td>234</td>
-                    <td>468</td>
-                </tr>
+                {#each range(maxYear - minYear + 1, minYear) as ano}
+                    {#if ano === minYear && ano === maxYear}
+                        {#each range(maxMonth - minMonth + 1, minMonth) as mes}
+                            <tr>
+                                <td>{mes}/{ano}</td>
+                                <td>{
+                                    (() => {
+                                        let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
+                                        if (dr === undefined) return 0;
+                                        return dr.value;
+                                    })()
+                                }</td>
+                                {#each getPeriods(mes, ano) as p}
+                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
+                                {/each}
+                            </tr>
+                        {/each}
+                    {:else if ano === minYear}
+                        {#each range(12 - minMonth + 1, minMonth) as mes}
+                            <tr>
+                                <td>{mes}/{ano}</td>
+                                <td>{
+                                    (() => {
+                                        let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
+                                        if (dr === undefined) return 0;
+                                        return dr.value;
+                                    })()
+                                }</td>
+                                {#each getPeriods(mes, ano) as p}
+                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
+                                {/each}
+                            </tr>
+                        {/each}
+                    {:else if ano === maxYear}
+                        {#each range(maxMonth, 1) as mes}
+                            <tr>
+                                <td>{mes}/{ano}</td>
+                                <td>{
+                                    (() => {
+                                        let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
+                                        if (dr === undefined) return 0;
+                                        return dr.value;
+                                    })()
+                                }</td>
+                                {#each getPeriods(mes, ano) as p}
+                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
+                                {/each}
+                            </tr>
+                        {/each}
+                    {:else}
+                        {#each range(12, 1) as mes}
+                            <tr>
+                                <td>{mes}/{ano}</td>
+                                <td>{
+                                    (() => {
+                                        let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
+                                        if (dr === undefined) return 0;
+                                        return dr.value;
+                                    })()
+                                }</td>
+                                {#each getPeriods(mes, ano) as p}
+                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
+                                {/each}
+                            </tr>
+                        {/each}
+                    {/if}
+                {/each}
             </tbody>
             <tfoot>
                 <tr>
                     <td><strong>Total</strong></td>
-                    <td>4234</td>
-                    <td>4150</td>
-                    <td>84</td>
-                    <td>4150</td>
-                    <td>84</td>
-                    <td class="text-bold">4150</td>
-                    <td class="text-bold">84</td>
-                    <td>4150</td>
-                    <td>84</td>
+                    <td>{resultados.periods.map(p => p.value).reduce((drt, v) => drt + v).toFixed(3)}</td>
+                    {#each resultados.predictions as p}
+                        <td>{p.periods.map(pe => pe.prediction).reduce((t, v) => t + v).toFixed(3)}</td>
+                        <td>
+                            {(() => {
+                                let aux = p.periods.map(pe => pe.error).reduce((t, v) => (t !== null ? t : 0) + (v !== null ? v : 0));
+                                if (aux === null) return 0;
+                                return aux / p.periods.length;
+                            })().toFixed(3)}
+                        </td>
+                    {/each}
                 </tr>
             </tfoot>
         </table>
@@ -230,6 +320,7 @@
     <div class="d-flex flex-row justify-content-end mb-4">
         <button class="bg-dark text-lighter">Generar Orden de Compra</button>
     </div>
+    {/if}
 
 </div>
 
