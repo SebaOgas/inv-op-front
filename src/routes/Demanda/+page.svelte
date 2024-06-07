@@ -51,12 +51,13 @@
 			color: "gray",
 			num: num,
 			ponderations: "",
-			alhpa: 0,
+			alpha: 0,
 			root: 0,
 			ignorePeriods: 0,
 			length: 0,
 			count: 0,
-			expectedDemand: 0
+			expectedDemand: 0,
+			predictPeriods: 0
 		};
 
         models = [...models, model];    
@@ -81,6 +82,10 @@
         await DemandaService.model.delete(model.id);
     }
 
+    let xLabels : string[] = [];
+
+    let fns : XYFunction[] = [];
+
     async function predict() {
         if (productoSeleccionado === null) return;
 
@@ -89,40 +94,58 @@
         minYear = new Date(fechaDesde).getFullYear();
         maxMonth = minMonth;
         maxYear = minYear;
+
+        fns = [];
+
+        let dr : XYFunction = {
+			dots: [],
+			color: "gray"
+		};
+
         resultados.periods.forEach(p => {
             if(p.year > maxYear || p.year === maxYear && p.month > maxMonth) {
                 maxMonth = p.month;
                 maxYear = p.year;
-            }
+            };
+
+            let x = p.month - 1 + p.year * 12;
+            let y = p.value;
+
+            dr.dots.push({
+                x: x, 
+                y: y
+            });
+
+            xLabels[x] = p.month + "/" + p.year;            
         });
+
+        fns = [...fns, dr];
+
         resultados.predictions.forEach(pr => {
+            let fn : XYFunction = {
+                dots: [],
+                color: pr.color
+            };
             pr.periods.forEach(p => {
                 if(p.year > maxYear || p.year === maxYear && p.month > maxMonth) {
                     maxMonth = p.month;
                     maxYear = p.year;
                 }
+                let x = p.month - 1 + p.year * 12;
+                let y = p.prediction;
+
+                fn.dots.push({
+                    x: x, 
+                    y: y
+                });
+
+                xLabels[x] = p.month + "/" + p.year;  
             });
+            fns = [...fns, fn];
         });
     }
 
-    let fns : XYFunction[] = [
-        {
-			dots: [{x:0, y:0}, {x:1, y:10}, {x:2, y:5}, {x:3, y:8}],
-			color: "blue"
-		},
-        {
-			dots: [{x:1, y:2}, {x:2, y:3}, {x:3, y:7}, {x:4, y:8}, {x:5, y:0}],
-			color: "red"
-		},
-        {
-			dots: [{x:0, y:6}, {x:2, y:3}, {x:3, y:1}, {x:4, y:10}, {x:5, y:3}],
-			color: "green"
-		},
-        {
-			dots: [{x:0, y:1}, {x:1, y:4}, {x:2, y:8}, {x:3, y:7}, {x:4, y:7}, {x:5, y:6}],
-			color: "violet"
-		},
-    ];
+    
 
     function range(size: number, startAt : number = 0) {
         return [...Array(size).keys()].map(i => i + startAt);
@@ -180,9 +203,10 @@
                     <label>Ponderaciones: <input type="text" bind:value={m.ponderations}></label>
                 {:else if m.type === "PMSE"}
                     <label>Raíz: <input type="number" bind:value={m.root} min={0}></label>
-                    <label>α: <input type="number" bind:value={m.alhpa} min={0} max={1} step={0.1}></label>
+                    <label>α: <input type="number" bind:value={m.alpha} min={0} max={1} step={0.1}></label>
                 {:else if m.type === "RL"}
                     <label>Ignorar periodos: <input type="number" bind:value={m.ignorePeriods} min={0}></label>
+                    <label>Predecir periodos: <input type="number" bind:value={m.predictPeriods} min={0}></label>
                 {:else if m.type === "Ix"}
                     <label>Longitud de ciclo: <input type="number" bind:value={m.length} min={1}></label>
                     <label>Ciclos anteriores a analizar: <input type="number" bind:value={m.count} min={1}></label>
@@ -208,7 +232,9 @@
 
     {#if resultados !== null}
     <h2 class="text-xl">Resultados</h2>
-    <XyGraph functions={fns} height={450} yMarks={8} precision={{x: 0, y: 2}}/>
+    
+    <XyGraph bind:functions={fns} height={450} yMarks={8} precision={{x: 0, y: 2}} bind:xLabels/>
+    
     <div class="overflow-auto mb-4">
         <table class="w-100">
             <thead>
@@ -309,7 +335,8 @@
                             {(() => {
                                 let aux = p.periods.map(pe => pe.error).reduce((t, v) => (t !== null ? t : 0) + (v !== null ? v : 0));
                                 if (aux === null) return 0;
-                                return aux / p.periods.length;
+                                let count = p.periods.filter(pe => pe.error !== null).length;
+                                return aux / count;
                             })().toFixed(3)}
                         </td>
                     {/each}

@@ -6,10 +6,11 @@ export default interface DTODemandPredictionModel {
     //PMP
     ponderations: string,
     //PMSE
-    alhpa: number,
+    alpha: number,
     root: number,
     //RL
     ignorePeriods: number,
+    predictPeriods: number,
     //Ix
     length: number,
     count: number,
