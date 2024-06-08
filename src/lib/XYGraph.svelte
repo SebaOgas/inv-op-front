@@ -28,7 +28,7 @@
         let cvw = canvas.width;
 
         let gh = cvh * 0.85;
-        let gw = cvw * 0.88;
+        let gw = cvw * 0.86;
         let oy = cvh * 0.05;
         let ox = cvw * 0.1;
 

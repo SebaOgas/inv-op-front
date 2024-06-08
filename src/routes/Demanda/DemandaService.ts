@@ -111,8 +111,8 @@ export const DemandaService = {
     },
 
     demandPrediction: {
-        get: async ( id: number, family: boolean, desde: Date) : Promise<DTODemandResults> => {
-            const response = await fetch(`${BASE_URL}/demandPrediction/${id}?family=${family}&desde=${desde}`, {
+        get: async ( id: number, family: boolean, desde: Date, predecirMesActual: boolean) : Promise<DTODemandResults> => {
+            const response = await fetch(`${BASE_URL}/demandPrediction/${id}?family=${family}&desde=${desde}&predecirMesActual=${predecirMesActual}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
