@@ -10,6 +10,7 @@
 	import type DTOProductOrFamily from "./DTOProductOrFamily";
 	import type DTODemandResults from "./DTODemandResults";
 	import { error } from "@sveltejs/kit";
+	import CheckBox from "$lib/CheckBox.svelte";
 
 
     let productsAndFamilies : DTOProductOrFamily[] = [];
@@ -21,6 +22,7 @@
     let minYear : number;
     let maxMonth : number;
     let maxYear : number;
+    let predecirMesActual : boolean = true;
 
     async function getProductsAndFamilies(search: string) {
         productsAndFamilies = await DemandaService.productsAndFamilies.get(search);
@@ -56,9 +58,8 @@
 			ignorePeriods: 0,
 			length: 0,
 			count: 0,
-			expectedDemand: 0,
-			predictPeriods: 0
-		};
+			expectedDemand: 0
+        };
 
         models = [...models, model];    
     }
@@ -89,7 +90,7 @@
     async function predict() {
         if (productoSeleccionado === null) return;
 
-        resultados = await DemandaService.demandPrediction.get(productoSeleccionado.id, productoSeleccionado.family, fechaDesde)
+        resultados = await DemandaService.demandPrediction.get(productoSeleccionado.id, productoSeleccionado.family, fechaDesde, predecirMesActual)
         minMonth = new Date(fechaDesde).getMonth() + 1;
         minYear = new Date(fechaDesde).getFullYear();
         maxMonth = minMonth;
@@ -108,15 +109,17 @@
                 maxYear = p.year;
             };
 
-            let x = p.month - 1 + p.year * 12;
-            let y = p.value;
+            if(p.value !== null) {
+                let x = p.month - 1 + p.year * 12;
+                let y = p.value;
 
-            dr.dots.push({
-                x: x, 
-                y: y
-            });
+                dr.dots.push({
+                    x: x, 
+                    y: y
+                });
 
-            xLabels[x] = p.month + "/" + p.year;            
+                xLabels[x] = p.month + "/" + p.year;       
+            }     
         });
 
         fns = [...fns, dr];
@@ -131,15 +134,17 @@
                     maxMonth = p.month;
                     maxYear = p.year;
                 }
-                let x = p.month - 1 + p.year * 12;
-                let y = p.prediction;
+                if (p.prediction !== null) {
+                    let x = p.month - 1 + p.year * 12;
+                    let y = p.prediction;
+                    
+                    fn.dots.push({
+                        x: x, 
+                        y: y
+                    });
 
-                fn.dots.push({
-                    x: x, 
-                    y: y
-                });
-
-                xLabels[x] = p.month + "/" + p.year;  
+                    xLabels[x] = p.month + "/" + p.year;  
+                }
             });
             fns = [...fns, fn];
         });
@@ -162,7 +167,7 @@
                 ret.push({
 					year: ano,
 					month: mes,
-					prediction: 0,
+					prediction: null,
 					error: null
 				});
             }
@@ -188,12 +193,17 @@
             <span class="me-2">Analizar desde: </span>
             <DatePicker width={"150px"} bind:value={fechaDesde}/>
         </span>
+
+        <span class="d-flex ms-2">
+            <CheckBox bind:checked={predecirMesActual} label={"Predecir mes actual"}/>
+        </span>
     </div>
     <div>
         <button class="bg-dark text-lighter" on:click={predict}>Generar Predicciones</button>
     </div>
 </div>
 
+{#if productoSeleccionado !== null}
 <div class="container-fluid">
     {#each models as m}
         <div class="prediccion d-flex flex-row justify-content-between">
@@ -206,7 +216,6 @@
                     <label>α: <input type="number" bind:value={m.alpha} min={0} max={1} step={0.1}></label>
                 {:else if m.type === "RL"}
                     <label>Ignorar periodos: <input type="number" bind:value={m.ignorePeriods} min={0}></label>
-                    <label>Predecir periodos: <input type="number" bind:value={m.predictPeriods} min={0}></label>
                 {:else if m.type === "Ix"}
                     <label>Longitud de ciclo: <input type="number" bind:value={m.length} min={1}></label>
                     <label>Ciclos anteriores a analizar: <input type="number" bind:value={m.count} min={1}></label>
@@ -261,12 +270,12 @@
                                 <td>{
                                     (() => {
                                         let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
-                                        if (dr === undefined) return 0;
+                                        if (dr === undefined || dr.value === null) return "-";
                                         return dr.value;
                                     })()
                                 }</td>
                                 {#each getPeriods(mes, ano) as p}
-                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.prediction !== null ? p.prediction.toFixed(3) : "-"}</td>
                                     <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
                                 {/each}
                             </tr>
@@ -278,12 +287,12 @@
                                 <td>{
                                     (() => {
                                         let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
-                                        if (dr === undefined) return 0;
+                                        if (dr === undefined || dr.value === null) return "-";
                                         return dr.value;
                                     })()
                                 }</td>
                                 {#each getPeriods(mes, ano) as p}
-                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.prediction !== null ? p.prediction.toFixed(3) : "-"}</td>
                                     <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
                                 {/each}
                             </tr>
@@ -295,12 +304,12 @@
                                 <td>{
                                     (() => {
                                         let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
-                                        if (dr === undefined) return 0;
+                                        if (dr === undefined || dr.value === null) return "-";
                                         return dr.value;
                                     })()
                                 }</td>
                                 {#each getPeriods(mes, ano) as p}
-                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.prediction !== null ? p.prediction.toFixed(3) : "-"}</td>
                                     <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
                                 {/each}
                             </tr>
@@ -312,12 +321,12 @@
                                 <td>{
                                     (() => {
                                         let dr = resultados.periods.find(p => p.month === mes && p.year === ano);
-                                        if (dr === undefined) return 0;
+                                        if (dr === undefined || dr.value === null) return "-";
                                         return dr.value;
                                     })()
                                 }</td>
                                 {#each getPeriods(mes, ano) as p}
-                                    <td>{p.prediction.toFixed(3)}</td>
+                                    <td>{p.prediction !== null ? p.prediction.toFixed(3) : "-"}</td>
                                     <td>{p.error === null ? "-" : p.error.toFixed(3)}</td>
                                 {/each}
                             </tr>
@@ -330,7 +339,7 @@
                     <td><strong>Total</strong></td>
                     <td>{resultados.periods.map(p => p.value).reduce((drt, v) => drt + v).toFixed(3)}</td>
                     {#each resultados.predictions as p}
-                        <td>{p.periods.map(pe => pe.prediction).reduce((t, v) => t + v).toFixed(3)}</td>
+                        <td>{p.periods.map(pe => pe.prediction !== null ? pe.prediction : 0).reduce((t, v) => t + v).toFixed(3)}</td>
                         <td>
                             {(() => {
                                 let aux = p.periods.map(pe => pe.error).reduce((t, v) => (t !== null ? t : 0) + (v !== null ? v : 0));
@@ -350,6 +359,7 @@
     {/if}
 
 </div>
+{/if}
 
 
 
