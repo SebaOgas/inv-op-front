@@ -32,6 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@svelte-plugins/datepicker": "^1.0.9"
+		"@svelte-plugins/datepicker": "^1.0.9",
+		"zod": "^3.23.8"
 	}
 }
