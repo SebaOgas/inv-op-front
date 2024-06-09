@@ -1,6 +1,8 @@
 import type DTODemandaHistoricaAnual from "./CargarDemandasHistoricas/DTODemandaHistoricaAnual";
 import type DTODemandaHistoricaProducto from "./CargarDemandasHistoricas/DTODemandaHistoricaProducto";
 import type DTODemandPredictionModel from "./DTODemandPredictionModel";
+import type DTODemandResults from "./DTODemandResults";
+import type DTOProductOrFamily from "./DTOProductOrFamily";
 
 const BASE_URL = "http://localhost:8081/invop/demandModule";
 
@@ -52,9 +54,26 @@ export const DemandaService = {
         }
     },
 
+
+    productsAndFamilies: {
+        get: async (search: string) : Promise<DTOProductOrFamily[]> => {
+            const response = await fetch(`${BASE_URL}/productsAndFamilies/${search}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            });
+            let ret = await response.json();
+            if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
+            const data : DTOProductOrFamily[] = ret;
+            return data;
+        }
+    },
+
     model: {
-        get: async () : Promise<DTODemandPredictionModel[]> => {
-            const response = await fetch(`${BASE_URL}/model`, {
+        get: async (id: number, family: boolean) : Promise<DTODemandPredictionModel[]> => {
+            const response = await fetch(`${BASE_URL}/model/${id}?family=${family}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json'
@@ -66,8 +85,8 @@ export const DemandaService = {
             const data : DTODemandPredictionModel[] = ret;
             return data;
         },
-        put: async (dto: DTODemandPredictionModel) : Promise<null> => {
-            const response = await fetch(`${BASE_URL}/model`, {
+        put: async (dto: DTODemandPredictionModel, id: number, family: boolean) : Promise<number> => {
+            const response = await fetch(`${BASE_URL}/model/${id}?family=${family}`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json'
@@ -76,7 +95,7 @@ export const DemandaService = {
                 mode: 'cors'
             });
             if (response.status !== 200) {throw new Error("" + response.status + (await response.json()).mensaje)};
-            return null;
+            return (await response.json()).id;
         },
         delete: async (id: number) : Promise<null> => {
             const response = await fetch(`${BASE_URL}/model/${id}`, {
@@ -88,6 +107,22 @@ export const DemandaService = {
             });
             if (response.status !== 200) {throw new Error("" + response.status + (await response.json()).mensaje)};
             return null;
+        }
+    },
+
+    demandPrediction: {
+        get: async ( id: number, family: boolean, desde: Date, predecirMesActual: boolean) : Promise<DTODemandResults> => {
+            const response = await fetch(`${BASE_URL}/demandPrediction/${id}?family=${family}&desde=${desde}&predecirMesActual=${predecirMesActual}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            });
+            let ret = await response.json();
+            if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
+            const data : DTODemandResults = ret;
+            return data;
         }
     }
     

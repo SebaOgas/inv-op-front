@@ -5,8 +5,9 @@
 </script>
 
 <div class="d-flex flex-row justify-content-between mb-2">
-    <span>Cantidad de periodos a predecir</span>
-    <input type="number" min={1} value={1}>
+    <span>Periodos a predecir
+    </span>
+    <input type="number" min={0} value={1}>
 </div>
 
 <div class="d-flex flex-row justify-content-between mb-2">
