@@ -29,7 +29,7 @@ export const actions = {
 
 		try {
 			newSale = newSaleSchema.parse(formData);
-			console.log(newSale);
+			// console.log(newSale);
 			await VentaService.sale.save(newSale);
 		} catch (err) {
 			return { success: false, formData: formData, formError: err.message}

@@ -15,7 +15,7 @@ export const VentaService = {
                 mode: 'cors'
             });
             let ret = await response.json();
-            if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
+            if (response.status !== 200) {throw new Error("" + response.status + (ret).message)};
             const data : DTOSale[] = ret;
             return data;
         },
@@ -25,7 +25,7 @@ export const VentaService = {
                 mode: 'cors'
             });
             let ret = await response.json();
-            if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
+            if (response.status !== 200) {throw new Error("" + response.status + (ret).message)};
             const data : DTOSale = ret;
             return data;
         },
@@ -39,7 +39,7 @@ export const VentaService = {
                 body: JSON.stringify(sale)
             });
             let ret = await response.json();
-            if (response.status !== 200) {throw new Error((ret).mensaje)};
+            if (response.status !== 200) {throw new Error((ret).message)};
             const data : DTOSale = ret;
             return data;
         },
@@ -51,7 +51,7 @@ export const VentaService = {
                 mode: 'cors'
             });
             let ret = await response.json();
-            if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
+            if (response.status !== 200) {throw new Error("" + response.status + (ret).message)};
             const data : DTOProduct[] = ret;
             return data;
         },
