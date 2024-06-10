@@ -16,7 +16,7 @@
 
 	async function getSales() {
 		sales = await VentaService.sale.getList('');
-		console.log(sales);
+		// console.log(sales);
 	}
 
 </script>
