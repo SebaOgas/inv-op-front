@@ -14,12 +14,10 @@
 
     onMount(() => {
 		getProducts();
-        console.log(productos)
 	});
 
     async function getProducts() {
         productos = await VentaService.product.getList();
-        console.log(productos);
     }
 
 
@@ -28,6 +26,7 @@
     }
 
     function getErrorMessage(): string {
+
         if (form?.formError == null) {
             return "Hubo un error, por favor intentelo más tarde.";
         }
