@@ -8,7 +8,7 @@
 
 </script>
 <div class="container-fluid">
-    <h1>Venta</h1>
+    <h1>Detalle de Venta</h1>
     <div class="mb-3 row">
         <label for="customerName" class="col-sm-4 col-form-label">Nombre del cliente:</label>
         <div class="col-sm-4">
