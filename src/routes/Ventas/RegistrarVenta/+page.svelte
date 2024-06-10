@@ -14,12 +14,10 @@
 
     onMount(() => {
 		getProducts();
-        console.log(productos)
 	});
 
     async function getProducts() {
         productos = await VentaService.product.getList();
-        console.log(productos);
     }
 
 
