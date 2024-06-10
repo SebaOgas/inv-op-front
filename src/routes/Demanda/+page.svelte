@@ -57,7 +57,6 @@
 			root: 0,
 			ignorePeriods: 0,
 			length: 0,
-			count: 0,
 			expectedDemand: 0
         };
 
@@ -218,7 +217,6 @@
                     <label>Ignorar periodos: <input type="number" bind:value={m.ignorePeriods} min={0}></label>
                 {:else if m.type === "Ix"}
                     <label>Longitud de ciclo: <input type="number" bind:value={m.length} min={1}></label>
-                    <label>Ciclos anteriores a analizar: <input type="number" bind:value={m.count} min={1}></label>
                     <label>Demanda esperada siguiente ciclo: <input type="number" bind:value={m.expectedDemand} min={1}></label>
                 {:else}
                     <span>Tipo de modelo desconocido</span>
@@ -339,14 +337,14 @@
                     <td><strong>Total</strong></td>
                     <td>{resultados.periods.map(p => p.value).reduce((drt, v) => drt + v).toFixed(3)}</td>
                     {#each resultados.predictions as p}
-                        <td>{p.periods.map(pe => pe.prediction !== null ? pe.prediction : 0).reduce((t, v) => t + v).toFixed(3)}</td>
+                        <td>{p.periods.map(pe => pe.prediction !== null && resultados !== null && resultados.periods.filter(per => per.month === pe.month && per.year === pe.year && per.value !== null).length === 0 ? pe.prediction : 0).reduce((t, v) => t + v).toFixed(3)}</td>
                         <td>
                             {(() => {
                                 let aux = p.periods.map(pe => pe.error).reduce((t, v) => (t !== null ? t : 0) + (v !== null ? v : 0));
                                 if (aux === null) return 0;
                                 let count = p.periods.filter(pe => pe.error !== null).length;
-                                return aux / count;
-                            })().toFixed(3)}
+                                return Number.isNaN(aux / count) ? "-" : (aux / count).toFixed(3);
+                            })()}
                         </td>
                     {/each}
                 </tr>

@@ -12,6 +12,5 @@ export default interface DTODemandPredictionModel {
     ignorePeriods: number,
     //Ix
     length: number,
-    count: number,
     expectedDemand: number
 }
