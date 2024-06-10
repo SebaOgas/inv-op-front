@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { VentaService } from '../VentaService';
 import type DTONewSale from '../DTONewSale';
+import { json } from '@sveltejs/kit';
 
 const newSaleSchema = z.object({
     customerName: z
@@ -13,7 +14,7 @@ const newSaleSchema = z.object({
         .trim(),
     productId: z
 		.coerce
-        .number({ required_error: 'El producto es requerido' })
+        .number({ required_error: 'El producto es requerido' , message: "Debe seleccionar un producto"})
 		.min(0),
     quantity: z
 		.coerce
@@ -29,10 +30,15 @@ export const actions = {
 
 		try {
 			newSale = newSaleSchema.parse(formData);
-			// console.log(newSale);
+		} catch (err) {
+			let jsonerr = JSON.parse(err.message);
+			return { success: false, formData: formData, formError: jsonerr.map(error => error.message).join(", ") };
+		}
+
+		try {
 			await VentaService.sale.save(newSale);
 		} catch (err) {
-			return { success: false, formData: formData, formError: err.message}
+			return { success: false, formData: formData, formError: err.message }
 		}		
 		return { success: true, formData};
 	},
