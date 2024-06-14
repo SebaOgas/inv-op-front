@@ -3,6 +3,7 @@ import type DTODemandaHistoricaProducto from "./CargarDemandasHistoricas/DTODema
 import type DTODemandPredictionModel from "./DTODemandPredictionModel";
 import type DTODemandResults from "./DTODemandResults";
 import type DTOProductOrFamily from "./DTOProductOrFamily";
+import type DTOGeneralDemandParameters from "./Parametros/DTOGeneralDemandParameters";
 
 const BASE_URL = "http://localhost:8081/invop/demandModule";
 
@@ -51,6 +52,34 @@ export const DemandaService = {
             if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
             const data : DTODemandaHistoricaAnual[] = ret;
             return data;
+        }
+    },
+
+    generalParameters: {
+        get: async () : Promise<DTOGeneralDemandParameters> => {
+            const response = await fetch(`${BASE_URL}/generalParameters`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            });
+            let ret = await response.json();
+            if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
+            const data : DTOGeneralDemandParameters = ret;
+            return data;
+        },
+        post: async (dto: DTOGeneralDemandParameters) : Promise<null> => {
+            const response = await fetch(`${BASE_URL}/generalParameters`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors',
+                body: JSON.stringify(dto)
+            });
+            if (response.status !== 200) {throw new Error("" + response.status + (await response.json()).mensaje)};
+            return null;
         }
     },
 
