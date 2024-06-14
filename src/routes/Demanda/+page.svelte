@@ -9,7 +9,6 @@
 	import { DemandaService } from "./DemandaService";
 	import type DTOProductOrFamily from "./DTOProductOrFamily";
 	import type DTODemandResults from "./DTODemandResults";
-	import { error } from "@sveltejs/kit";
 	import CheckBox from "$lib/CheckBox.svelte";
 
 
@@ -351,8 +350,21 @@
             </tfoot>
         </table>
     </div>
-    <div class="d-flex flex-row justify-content-end mb-4">
-        <button class="bg-dark text-lighter">Generar Orden de Compra</button>
+    <div class="gap d-flex flex-row justify-content-between mb-4">
+        <div class="gap d-flex flex-row flex-wrap">
+            <strong>Demanda esperada para 7/2024:</strong>
+            <span>34332</span>
+            <ComboBox placeholder="No modificar">
+                <span>No modificar</span>
+                {#each models as m}
+                    <span>{m.type} {m.num}</span>
+                {/each}
+            </ComboBox>
+            <span>Error del método: 0,43</span>
+        </div>
+        <div class="d-flex flex-column justify-content-start align-items-center">
+            <button class="bg-dark text-lighter">Establecer</button>
+        </div>
     </div>
     {/if}
 
@@ -400,16 +412,16 @@
         z-index: 1;
     }
 
-    .highlighted, .highlighted * {
-        background-color: var(--light) !important;
-    }
-
     .button-container>button {
         flex: 1;
     }
 
     .button-container>button>img {
         height: 14pt;
+    }
+
+    .gap {
+        gap: 12pt;
     }
 
 </style>
