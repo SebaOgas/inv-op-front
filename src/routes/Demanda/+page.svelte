@@ -221,7 +221,7 @@
                 {:else}
                     <span>Tipo de modelo desconocido</span>
                 {/if}
-                <label>Color: <input type="text" bind:value={m.color}></label>
+                <label class="d-inline-flex flex-row align-items-center">Color: <input class="ms-1" type="color" bind:value={m.color}></label>
             </div>
             <div class="button-container d-flex flex-row justify-content-center align-items-center">
                 <button class="bg-darker text-lighter me-1" on:click={() => putModel(m)}><img src="/save.svg" alt="guardar"></button>
