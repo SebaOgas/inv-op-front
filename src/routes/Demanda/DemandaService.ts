@@ -1,7 +1,9 @@
+import { json } from "@sveltejs/kit";
 import type DTODemandaHistoricaAnual from "./CargarDemandasHistoricas/DTODemandaHistoricaAnual";
 import type DTODemandaHistoricaProducto from "./CargarDemandasHistoricas/DTODemandaHistoricaProducto";
 import type DTODemandPredictionModel from "./DTODemandPredictionModel";
 import type DTODemandResults from "./DTODemandResults";
+import type DTONextPeriodDemand from "./DTONextPeriodDemand";
 import type DTOProductOrFamily from "./DTOProductOrFamily";
 import type DTOGeneralDemandParameters from "./Parametros/DTOGeneralDemandParameters";
 
@@ -152,6 +154,18 @@ export const DemandaService = {
             if (response.status !== 200) {throw new Error("" + response.status + (ret).mensaje)};
             const data : DTODemandResults = ret;
             return data;
+        },
+        post: async (dto: DTONextPeriodDemand) : Promise<null> => {
+            const response = await fetch(`${BASE_URL}/demandPrediction`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors',
+                body: JSON.stringify(dto)
+            });
+            if (response.status !== 200) {throw new Error("" + response.status + (await response.json()).mensaje)};
+            return null;
         }
     }
     
