@@ -17,7 +17,7 @@
 </script>
 
 
-<h3>Lista de Productos A Reponer:</h3>
+<h3>Productos A Reponer:</h3>
 <ul>
     {#each productosAReponer as producto}
         <li>{producto.nombre} - Cantidad a reponer: {producto.cantidadAReponer}</li>

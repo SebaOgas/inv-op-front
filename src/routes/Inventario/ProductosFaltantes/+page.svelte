@@ -22,7 +22,7 @@
 </script>
 
 
-<h3>Lista de Productos Faltantes:</h3>
+<h3>Productos Faltantes:</h3>
 <ul>
     {#each productosFaltantes as producto}
         <li>{producto.nombre} - Cantidad Faltante: {producto.cantidadFaltante}</li>
