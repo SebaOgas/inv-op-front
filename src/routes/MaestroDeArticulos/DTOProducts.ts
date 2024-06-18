@@ -9,6 +9,8 @@ export interface ProductResponseDto {
     safeStock: number;
     orderLimit: number;
     optimalBatch: number;
+    isDeleted: boolean;
+    productFamilyId: number;
 
 }
 
