@@ -26,24 +26,24 @@
     }
 
     async function deleteOrRestoreProduct(product: ProductResponseDto) {
-        if (product.isDeleted) {
-            // Restaurar el producto
-            restoreProduct(product);
-        } else {
-            // Eliminar el producto
-            const confirmacion = confirm('¿Estás seguro de que deseas dar de baja este producto?');
-            if (confirmacion) {
-                try {
-                    await ProductService.products.delete(product.productId);
-                    alert('Producto dado de baja correctamente.');
-                    fetchProducts(); // Actualizar la lista después de dar de baja
-                } catch (error) {
-                    console.error('Error al dar de baja producto:', error);
-                    alert('Error al dar de baja el producto: ' + error.message);
-                }
+    if (product.isDeleted) {
+        // Restaurar el producto
+        restoreProduct(product);
+    } else {
+        // Eliminar el producto
+        const confirmacion = confirm('¿Estás seguro de que deseas dar de baja este producto?');
+        if (confirmacion) {
+            try {
+                await ProductService.products.delete(product.productId);
+                alert('Producto dado de baja correctamente.');
+                fetchProducts(); // Actualizar la lista después de dar de baja
+            } catch (error) {
+                console.error('Error al dar de baja producto:', error);
+                alert('Error al dar de baja el producto: ' + error.message);
             }
         }
     }
+}
 
     onMount(() => {
         fetchProducts();
@@ -60,7 +60,7 @@
         <input type="checkbox" bind:checked={showDeleted} />
         Mostrar eliminados
     </label>
-    <button on:click={() => redir('Crear')} class="bg-dark text-lighter" style="margin-left: 10px;">Crear</button>
+    <button on:click={() => redir('CrearProducto')} class="bg-dark text-lighter" style="margin-left: 10px;">Crear</button>
 </div>
 
 <div style="overflow-x: auto;">

@@ -9,8 +9,8 @@
 	import { DemandaService } from "./DemandaService";
 	import type DTOProductOrFamily from "./DTOProductOrFamily";
 	import type DTODemandResults from "./DTODemandResults";
-	import { error } from "@sveltejs/kit";
 	import CheckBox from "$lib/CheckBox.svelte";
+	import type DTONextPeriodDemand from "./DTONextPeriodDemand";
 
 
     let productsAndFamilies : DTOProductOrFamily[] = [];
@@ -27,6 +27,7 @@
     async function getProductsAndFamilies(search: string) {
         productsAndFamilies = await DemandaService.productsAndFamilies.get(search);
         productoSeleccionado = null;
+        prediccionesGeneradas = false;
     }
 
     async function seleccionarProducto(id: number, family: boolean) {
@@ -36,6 +37,8 @@
                 return;
             }
         });
+
+        prediccionesGeneradas = false;
 
         if(productoSeleccionado !== null)
             models = await DemandaService.model.get(productoSeleccionado.id, productoSeleccionado.family);
@@ -86,10 +89,19 @@
 
     let fns : XYFunction[] = [];
 
+    let prediccionesGeneradas = false;
+
     async function predict() {
         if (productoSeleccionado === null) return;
 
         resultados = await DemandaService.demandPrediction.get(productoSeleccionado.id, productoSeleccionado.family, fechaDesde, predecirMesActual)
+        
+        prediccionesGeneradas = true;
+
+        modeloSeleccionado = null;
+        expectedNextPeriodDemand = {...resultados.nextPeriodDemand};
+        errorModeloSeleccionado = null;
+        
         minMonth = new Date(fechaDesde).getMonth() + 1;
         minYear = new Date(fechaDesde).getFullYear();
         maxMonth = minMonth;
@@ -174,6 +186,47 @@
         return ret;
     }
 
+
+    let modeloSeleccionado : DTODemandPredictionModel | null;
+    let expectedNextPeriodDemand : DTONextPeriodDemand = {
+		month: 0,
+		year: 0,
+		quantity: null,
+		model: null
+	}
+    let errorModeloSeleccionado : number | null;
+
+    function seleccionarModelo(m: DTODemandPredictionModel | null) {
+        modeloSeleccionado = m;
+        if (resultados !== null) {
+            if (m !== null) {
+                expectedNextPeriodDemand.model = m.id;
+                
+                let pred = resultados.predictions.filter(p => p.id === modeloSeleccionado?.id)[0];
+                let per = pred.periods.filter(pe => pe.month === resultados?.nextPeriodDemand.month && pe.year === resultados?.nextPeriodDemand.year)[0]
+                expectedNextPeriodDemand.quantity = per.prediction !== null ? Math.round(per.prediction) : null;
+            
+                let p = resultados.predictions.filter(p => p.id === modeloSeleccionado?.id)[0];
+                let aux = p.periods.map(pe => pe.error).reduce((t, v) => (t !== null ? t : 0) + (v !== null ? v : 0));
+                if (aux === null) return 0;
+                let count = p.periods.filter(pe => pe.error !== null).length;
+                errorModeloSeleccionado = Number.isNaN(aux / count) ? null : aux / count;
+            } else {
+                expectedNextPeriodDemand = {...resultados.nextPeriodDemand};
+                errorModeloSeleccionado = null;
+            }
+        }
+        
+    }
+
+    async function setExpectedNextPeriodDemand() {
+        if(resultados === null || modeloSeleccionado === null) return;
+        await DemandaService.demandPrediction.post(expectedNextPeriodDemand);
+        modeloSeleccionado = null;
+        resultados.nextPeriodDemand = {...expectedNextPeriodDemand};
+        errorModeloSeleccionado = null;
+    }
+
 </script>
 
 <div class="filter d-flex flex-row justify-content-between mb-4">
@@ -221,7 +274,7 @@
                 {:else}
                     <span>Tipo de modelo desconocido</span>
                 {/if}
-                <label>Color: <input type="text" bind:value={m.color}></label>
+                <label class="d-inline-flex flex-row align-items-center">Color: <input class="ms-1" type="color" bind:value={m.color}></label>
             </div>
             <div class="button-container d-flex flex-row justify-content-center align-items-center">
                 <button class="bg-darker text-lighter me-1" on:click={() => putModel(m)}><img src="/save.svg" alt="guardar"></button>
@@ -237,7 +290,7 @@
         <button on:click={() => addModel("Ix")}>+ Ix</button>
     </div>
 
-    {#if resultados !== null}
+    {#if resultados !== null && prediccionesGeneradas === true}
     <h2 class="text-xl">Resultados</h2>
     
     <XyGraph bind:functions={fns} height={450} yMarks={8} precision={{x: 0, y: 2}} bind:xLabels/>
@@ -351,9 +404,34 @@
             </tfoot>
         </table>
     </div>
-    <div class="d-flex flex-row justify-content-end mb-4">
-        <button class="bg-dark text-lighter">Generar Orden de Compra</button>
-    </div>
+        {#if productoSeleccionado.family === false}
+            <div class="gap d-flex flex-row justify-content-between mb-4">
+                <div class="gap d-flex flex-row flex-wrap">
+                    <strong>Demanda esperada para {resultados.nextPeriodDemand.month}/{resultados.nextPeriodDemand.year}:</strong>
+                    <span>{expectedNextPeriodDemand.quantity !== null ? expectedNextPeriodDemand.quantity : "-"}</span>
+                    <ComboBox placeholder="No modificar" value={modeloSeleccionado !== null ? `${modeloSeleccionado.type} ${modeloSeleccionado.num}` : "No modificar"}>
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                        <span on:click={() => {seleccionarModelo(null)}}>No modificar</span>
+                        {#each models as m}
+                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                            <!-- svelte-ignore a11y-no-static-element-interactions -->
+                            <span on:click={() => {seleccionarModelo(m)}}>{m.type} {m.num}</span>
+                        {/each}
+                    </ComboBox>
+                    {#if modeloSeleccionado !== null}
+                        <span>Error del método: 
+                            {errorModeloSeleccionado !== null ? errorModeloSeleccionado.toFixed(3) : "-"}
+                        </span>
+                    {/if}
+                </div>
+                <div class="d-flex flex-column justify-content-start align-items-center">
+                    {#if modeloSeleccionado !== null}
+                        <button class="bg-dark text-lighter" on:click={setExpectedNextPeriodDemand}>Establecer</button>
+                    {/if}
+                </div>
+            </div>
+        {/if}
     {/if}
 
 </div>
@@ -400,16 +478,16 @@
         z-index: 1;
     }
 
-    .highlighted, .highlighted * {
-        background-color: var(--light) !important;
-    }
-
     .button-container>button {
         flex: 1;
     }
 
     .button-container>button>img {
         height: 14pt;
+    }
+
+    .gap {
+        gap: 12pt;
     }
 
 </style>
