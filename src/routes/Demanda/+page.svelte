@@ -420,13 +420,13 @@
                         {/each}
                     </ComboBox>
                     {#if modeloSeleccionado !== null}
-                        <span>Error del método: 
+                        <span class={errorModeloSeleccionado !== null && errorModeloSeleccionado > resultados.errorAceptable ? "invalidError" : ""}>Error del método: 
                             {errorModeloSeleccionado !== null ? errorModeloSeleccionado.toFixed(3) : "-"}
                         </span>
                     {/if}
                 </div>
                 <div class="d-flex flex-column justify-content-start align-items-center">
-                    {#if modeloSeleccionado !== null}
+                    {#if modeloSeleccionado !== null && (errorModeloSeleccionado === null || errorModeloSeleccionado <= resultados.errorAceptable)}
                         <button class="bg-dark text-lighter" on:click={setExpectedNextPeriodDemand}>Establecer</button>
                     {/if}
                 </div>
@@ -488,6 +488,10 @@
 
     .gap {
         gap: 12pt;
+    }
+
+    .invalidError {
+        color: red;
     }
 
 </style>
