@@ -5,5 +5,6 @@ import type DTONextPeriodDemand from "./DTONextPeriodDemand";
 export default interface DTODemandResults {
     periods: DTODemandRealPeriod[],
     predictions: DTODemandPrediction[],
-    nextPeriodDemand: DTONextPeriodDemand
+    nextPeriodDemand: DTONextPeriodDemand,
+    errorAceptable: number
 }
