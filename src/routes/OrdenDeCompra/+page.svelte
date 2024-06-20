@@ -5,12 +5,6 @@
 	import { format } from 'date-fns';
 	import { PurchaseOrderStatusEnum } from './PurchaseOrderStatusEnum';
 
-
-	// const PurchaseOrderStatusEnum = {
-	// 	OPEN: "OPEN",
-	// 	CLOSED: "CLOSED"
-	// }
-
 	function parseStatus(status: string){
 		// console.log(status);
 		switch (status) {
@@ -69,7 +63,12 @@
 						<td>{purchaseOrder.productName}</td>
 						<td>{purchaseOrder.orderQuantity}</td>
 						<td>{parseStatus(purchaseOrder.purchaseOrderStatus)}</td>
-						<td><a href="/OrdenDeCompra/{purchaseOrder.purchaseOrderId}">Ver</a></td>
+						<td>
+							<!-- <a href="/OrdenDeCompra/{purchaseOrder.purchaseOrderId}">Ver</a> -->
+							<!-- <button on:click={() => redir(`/OrdenDeCompra{purchaseOrder.purchaseOrderId}`)}>Modificar</button> -->
+							<button on:click={() => redir(`/OrdenDeCompra/${purchaseOrder.purchaseOrderId}`)}>Ver</button>
+							<button on:click={() => redir(`/OrdenDeCompra/${purchaseOrder.purchaseOrderId}`)} style="background-color: green; color: aliceblue;">Completar</button>
+						</td>
 					</tr>
 				{/each}
 			{:else}
