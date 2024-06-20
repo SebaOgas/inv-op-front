@@ -3,7 +3,6 @@
     import type DTOProduct from '../DTOProduct';
 	import ComboBox from "$lib/ComboBox.svelte";
 
-    import { format } from 'date-fns';
     import { onMount } from 'svelte';
     import { VentaService } from '../VentaService';
 	import type { ActionData } from './$types';
