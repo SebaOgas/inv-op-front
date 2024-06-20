@@ -29,7 +29,7 @@ export const VentaService = {
             const data : DTOSale = ret;
             return data;
         },
-        save: async (sale: DTONewSale) : Promise<DTONewSale> => {
+        create: async (sale: DTONewSale) : Promise<DTONewSale> => {
             const response = await fetch(`${BASE_URL}/saleModule/sale`, {
                 method: "POST",
                 headers: {

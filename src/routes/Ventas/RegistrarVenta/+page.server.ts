@@ -36,7 +36,7 @@ export const actions = {
 		}
 
 		try {
-			await VentaService.sale.save(newSale);
+			await VentaService.sale.create(newSale);
 		} catch (err) {
 			return { success: false, formData: formData, formError: err.message }
 		}		
