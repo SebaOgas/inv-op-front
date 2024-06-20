@@ -3,15 +3,16 @@
 	import { OrdenDeCompraService } from './OrdenDeCompraService';
 	import { onMount } from 'svelte';
 	import { format } from 'date-fns';
+	import { PurchaseOrderStatusEnum } from './PurchaseOrderStatusEnum';
 
 
-	const PurchaseOrderStatusEnum = {
-		OPEN: "OPEN",
-		CLOSED: "CLOSED"
-	}
+	// const PurchaseOrderStatusEnum = {
+	// 	OPEN: "OPEN",
+	// 	CLOSED: "CLOSED"
+	// }
 
 	function parseStatus(status: string){
-		console.log(status);
+		// console.log(status);
 		switch (status) {
 			case PurchaseOrderStatusEnum.OPEN: return "Abierta";
 			case PurchaseOrderStatusEnum.CLOSED: return "Cerrada";
@@ -49,8 +50,9 @@
 		<thead>
 			<tr>
 				<td class="col-sm-1">Fecha de la orden</td>
-				<td class="col-sm-4">Proveedor</td>
-				<td class="col-sm-4">Producto</td>
+				<td class="col-sm-3">Proveedor</td>
+				<td class="col-sm-3">Producto</td>
+				<td class="col-sm-2">Cantidad pedida</td>
 				<td class="col-sm-2">Estado de la orden</td>
 				<!-- <td>Fecha</td> -->
 				<td class="col-sm-1">Accion</td>
@@ -65,6 +67,7 @@
 						<!-- <td>{sale.saleId}</td> -->
 						<td>{purchaseOrder.supplierName}</td>
 						<td>{purchaseOrder.productName}</td>
+						<td>{purchaseOrder.orderQuantity}</td>
 						<td>{parseStatus(purchaseOrder.purchaseOrderStatus)}</td>
 						<td><a href="/OrdenDeCompra/{purchaseOrder.purchaseOrderId}">Ver</a></td>
 					</tr>

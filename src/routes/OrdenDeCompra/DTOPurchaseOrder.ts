@@ -1,9 +1,10 @@
 export default interface DTOPurchaseOrder {
     purchaseOrderId: number,
-    purchaseOrderDate: Date,
+    purchaseOrderDate: string,
     productId: number,
     productName: string,
     purchaseOrderStatus: string,
     supplierId: number,
     supplierName: string,    
+    orderQuantity: number,
 }

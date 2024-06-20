@@ -3,14 +3,12 @@
     import { OrdenDeCompraService } from "../OrdenDeCompraService";
     import type  DTOProduct from "../DTOProduct";
     import type DTOSupplier from '../DTOSupplier';
+    import type DTOPurchaseOrder from '../DTOPurchaseOrder';
     import { format } from 'date-fns';
 
-    let currentDate = ""
     
-    let newPurchaseOrder = {
-        purchaseOrderDate: '',
-        productId: 0,
-        supplierId: 0,
+    let newPurchaseOrder : DTOPurchaseOrder = {
+        purchaseOrderDate: Date.now(),
         orderQuantity: 0
     };
 
@@ -22,7 +20,7 @@
         try {
             products = await OrdenDeCompraService.product.getList();
         } catch (error) {
-            console.error("Error fetching product families:", error);
+            console.error("Error fetching products:", error);
         }
     }
 
@@ -30,16 +28,16 @@
         try {
             suppliers = await OrdenDeCompraService.supplier.getList();
         } catch (error) {
-            console.error("Error fetching product families:", error);
+            console.error("Error fetching suppliers:", error);
         }
     }
 
     async function crearOrdenDeCompra() {
         try {
-        //     await ProductService.products.create(newProduct);
-            alert('Producto creado correctamente');
+            await OrdenDeCompraService.purchaseOrder.create(newPurchaseOrder);
+            alert('Orden de compra creada correctamente');
             if (typeof window !== 'undefined') {
-                window.location.href = "/OrdenDeCompra"; // Redirige a la página principal o a donde prefieras
+                window.location.href = "/OrdenDeCompra";
             }
         } catch (error) {
             console.error("Error creando la orden de compra:", error);
@@ -47,11 +45,10 @@
         }
     }
 
-    async function obtenerValoresPorDefecto(productId: string){
+    async function obtenerValoresPorDefecto(productId: number){
         try {
             newPurchaseOrder.supplierId = (await OrdenDeCompraService.product.getDefaultSupplier(productId)).supplierId;
-            //TODO: sugerir cantidad.
-            // newPurchaseOrder.orderQuantity = products.find(product => product.productId = productId ).optimalBatch;
+            newPurchaseOrder.orderQuantity = products.find(product => product.productId == productId )?.optimalBatch;
         } catch (error) {
             console.log("Hubo un error al obtener el proveedor por default");
         }
@@ -60,27 +57,20 @@
     onMount(() => {
         fetchProducts();
         fetchSuppliers();
-        console.log(products)
-        currentDate = format(Date.now(), 'dd/MM/yyyy');
+        // console.log(products)
     });
 
     function handleInputChange(event: Event) {
         const target = event.target as HTMLInputElement;
         const { name, value } = target;
-        console.log("event:" + event)
-        console.log("name:"+ name)
-        console.log("value:" + value)
-        console.log(products)
+        // console.log("event:" + event)
+        // console.log("name:"+ name)
+        // console.log("value:" + value)
+        // console.log(products)
 
         if (name === 'productId'){
             obtenerValoresPorDefecto(value);
         }
-
-        // if (name === 'productFamilyId') {
-        //     newProduct.productFamilyId = parseInt(value, 10); // Parse the value to number if necessary
-        // } else {
-        //     newProduct = { ...newProduct, [name]: value };
-        // }
     }
 
 </script>
@@ -90,11 +80,11 @@
     <form on:submit|preventDefault={crearOrdenDeCompra}>
         <div>
             <label for="purchaseOrderDate">Fecha del pedido:</label>
-            <input type="text" id="purchaseOrderDate" name="purchaseOrderDate" bind:value={currentDate} required readonly/>
+            <!-- <input type="text" id="purchaseOrderDate" name="purchaseOrderDate" bind:value={newPurchaseOrder.purchaseOrderDate} required readonly/> -->
+            <input type="text" id="purchaseOrderDate" name="purchaseOrderDate" value={format(newPurchaseOrder.purchaseOrderDate, 'dd/MM/yyyy')} required readonly/>
         </div>
         <div>
             <label for="product">Articulo:</label>
-            <!-- <select id="productFamily" name="productFamilyId" bind:value={newProduct.productFamilyId} on:change={handleInputChange} required> -->
             <select id="productId" name="productId" bind:value={newPurchaseOrder.productId} on:change={handleInputChange} required>
                 <option value="">Seleccionar artículo</option>
                 {#each products as product}
@@ -104,7 +94,6 @@
         </div>
         <div>
             <label for="supplier">Proveedor:</label>
-            <!-- <select id="productFamily" name="productFamilyId" bind:value={newProduct.productFamilyId} on:change={handleInputChange} required> -->
             <select id="supplier" name="supplierid" bind:value={newPurchaseOrder.supplierId} required>
                 <option value="">Seleccionar artículo</option>
                 {#each suppliers as supplier}
@@ -112,23 +101,9 @@
                 {/each}
             </select>
         </div>
-        <!-- <div>
-            <label for="optimalBatch">Lote Óptimo:</label>
-            <input type="number" id="optimalBatch" name="optimalBatch" bind:value={newProduct.optimalBatch} on:input={handleInputChange} required />
-            <input type="number" id="optimalBatch" name="optimalBatch" bind:value={newProduct.optimalBatch} on:input={handleInputChange} required />
-        </div>
-        <div>
-            <label for="orderLimit">Límite de Orden:</label>
-            <input type="number" id="orderLimit" name="orderLimit" bind:value={newProduct.orderLimit} on:input={handleInputChange} required />
-        </div>
-        <div>
-            <label for="safeStock">Stock Seguro:</label>
-            <input type="number" id="safeStock" name="safeStock" bind:value={newProduct.safeStock} on:input={handleInputChange} required />
-        </div> -->
         <div>
             <label for="stock">Cantidad a ordenar:</label>
-            <!-- <input type="number" id="stock" name="stock" bind:value={newProduct.stock} on:input={handleInputChange} required /> -->
-            <input type="number" id="stock" name="stock" required />
+            <input type="number" id="orderQuantity" name="orderQuantity" bind:value={newPurchaseOrder.orderQuantity} required min="0"/>
         </div>
         <button type="submit">Crear Producto</button>
         <button type="button" on:click={() => window.location.href = "/OrdenDeCompra"}>Cancelar</button>
