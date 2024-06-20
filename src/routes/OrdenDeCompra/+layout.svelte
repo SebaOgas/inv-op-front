@@ -9,10 +9,10 @@
 </script>
 
 <div class="container-fluid">
-    <h1>Orden de Compra</h1>
+    <h1>Ordenes de Compra</h1>
 
     <button class="position-fixed top-0 end-0 m-2" on:click={back}>↩</button>
-
+    <button on:click={() => {redir("../")}}>Inicio</button>
     <hr>
 
     <slot/>
