@@ -29,6 +29,17 @@
 		// console.log(sales);
 	}
 
+	async function closePurchaseOrder(productId: number) {
+		try {
+			await OrdenDeCompraService.purchaseOrder.closePurchaseOrder(productId);
+		} catch (error) {
+			alert("Hubo un error al cerrar la orden: " + error.message)
+		}
+
+		window.location.href = window.location.href;
+		
+	}
+
 </script>
 
 <div class="container-fluid">
@@ -67,7 +78,8 @@
 							<!-- <a href="/OrdenDeCompra/{purchaseOrder.purchaseOrderId}">Ver</a> -->
 							<!-- <button on:click={() => redir(`/OrdenDeCompra{purchaseOrder.purchaseOrderId}`)}>Modificar</button> -->
 							<button on:click={() => redir(`/OrdenDeCompra/${purchaseOrder.purchaseOrderId}`)}>Ver</button>
-							<button on:click={() => redir(`/OrdenDeCompra/${purchaseOrder.purchaseOrderId}`)} style="background-color: green; color: aliceblue;">Completar</button>
+							<!-- <button on:click={() => redir(`/OrdenDeCompra/${purchaseOrder.purchaseOrderId}`)} style="background-color: green; color: aliceblue;">Completar</button> -->
+							<button on:click={() => closePurchaseOrder(purchaseOrder.purchaseOrderId)} style="background-color: green; color: aliceblue;">Completar</button>
 						</td>
 					</tr>
 				{/each}

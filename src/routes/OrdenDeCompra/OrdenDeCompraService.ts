@@ -44,7 +44,20 @@ export const OrdenDeCompraService = {
             const data : DTOPurchaseOrder = ret;
             return data;
         },
-    },    
+        closePurchaseOrder: async (purchaseOrderId: number) : Promise<DTOPurchaseOrder> => {
+            const response = await fetch(`${BASE_URL}/purchasOrderModule/purchaseOrder/${purchaseOrderId}/close`, {
+                method: "POST",
+                // headers: {
+                //     'Content-Type':
+                // }
+                mode: 'cors'
+            });
+            let ret = await response.json();
+            if (response.status !== 200) {throw new Error((ret).message)};
+            const data : DTOPurchaseOrder = ret;
+            return data;
+        },
+    },
     product: {
         getList: async () : Promise<DTOProduct[]> => {
             const response = await fetch(`${BASE_URL}/productModule/product`, {
