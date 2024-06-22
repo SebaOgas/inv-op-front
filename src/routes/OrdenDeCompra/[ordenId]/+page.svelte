@@ -2,7 +2,7 @@
     import { format } from 'date-fns';
 	import { PurchaseOrderStatusEnum } from '../PurchaseOrderStatusEnum';
 	export let data;
-
+    
     function redir(url: string) {
         window.location.href = url;
     }
