@@ -22,9 +22,26 @@
 </script>
 
 
-<h3>Productos Faltantes:</h3>
-<ul>
-    {#each productosFaltantes as producto}
-        <li>{producto.nombre} - Cantidad Faltante: {producto.cantidadFaltante}</li>
-    {/each}
-</ul>
+
+
+<div style="overflow-x: auto;">
+    <h3>Productos Faltantes:</h3>
+    <table style="width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each productosFaltantes as product}
+                <tr>
+                    <td>{product.id}</td>
+                    <td>{product.nombre}</td>
+                    <td>{product.cantidadFaltante}</td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+</div>

@@ -7,19 +7,34 @@
     let productosAReponer: DTOProductosAReponer[] = [];
 
     onMount(() => {
-		getProductosFaltantes();
+		getProductosAReponer();
 	});
 
-    async function getProductosFaltantes() {
+    async function getProductosAReponer() {
         productosAReponer = await InventarioService.productosAReponer.getList();
     }
 
 </script>
 
 
-<h3>Productos A Reponer:</h3>
-<ul>
-    {#each productosAReponer as producto}
-        <li>{producto.nombre} - Cantidad a reponer: {producto.cantidadAReponer}</li>
-    {/each}
-</ul>
+<div style="overflow-x: auto;">
+    <h3>Productos A Reponer:</h3>
+    <table style="width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each productosAReponer as product}
+                <tr>
+                    <td>{product.id}</td>
+                    <td>{product.nombre}</td>
+                    <td>{product.cantidadAReponer}</td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+</div>
