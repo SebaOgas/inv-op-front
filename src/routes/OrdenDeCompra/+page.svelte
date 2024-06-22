@@ -55,7 +55,7 @@
 		>
 		<button class=""
 			on:click={() => {
-				redir('/OrdenDeCompra/RegistrarOrdenDeCompra');
+				redir('/OrdenDeCompra/CalcularOrdenesDeCompra');
 			}}>Calcular ordenes de Compra</button	
 		>
 	</div>
