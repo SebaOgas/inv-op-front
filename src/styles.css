@@ -112,14 +112,13 @@ button:hover:not(:disabled), button:focus:not(:disabled), input[type="button"]:h
     transform: scale(1.1);
 }
 
-input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
+input[type="color"], input[type="text"], input[type="password"], input[type="email"], input[type="number"], textarea {
     border-radius: var(--radius);
     border: 1px solid var(--darker);
     outline: 0;
     background-color: var(--lighter);
     font-size: var(--font-size);
 }
-
 
 ::-webkit-scrollbar {
     width: 10px;
