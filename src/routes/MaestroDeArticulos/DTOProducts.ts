@@ -13,6 +13,7 @@ export interface ProductResponseDto {
     productFamilyId: number;
     productDemand: number;
     maxStock: number;
+    totalHistoricDemand:number;
 
 }
 
