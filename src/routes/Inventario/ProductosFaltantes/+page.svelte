@@ -1,47 +1,54 @@
+
 <script lang="ts">
     import { onMount } from 'svelte';
     
     import type { DTOProductosFaltantes } from '../DTOProductosFaltantes';
 	import { InventarioService } from '../InventarioService';
 
-    let productosFaltantes: DTOProductosFaltantes[] = [
-        { id: 1, nombre: 'Producto A', cantidadFaltante: 0 },
-        { id: 2, nombre: 'Producto B', cantidadFaltante: -2 },
-        { id: 3, nombre: 'Producto C', cantidadFaltante: -5 },
-        { id: 4, nombre: 'Producto D', cantidadFaltante: -1 }
-    ]
+    let missingProducts: DTOProductosFaltantes[] = [];
+    let error: string | null = null;
+    let isLoading = true;
 
-
-    onMount(() => {
-		getProductosFaltantes();
-	});
-
-    async function getProductosFaltantes() {
-        productosFaltantes = await InventarioService.productosFaltantes.getList();
-    }
+    onMount(async () => {
+        try {
+            missingProducts = await InventarioService.getMissingProducts();
+        } catch (err) {
+            
+        } finally {
+            isLoading = false;
+        }
+    });
 </script>
 
-
-
-
 <div style="overflow-x: auto;">
-    <h3>Productos Faltantes:</h3>
-    <table style="width: 100%;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Cantidad</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each productosFaltantes as product}
+    <h1>Productos Faltantes</h1>
+
+    {#if isLoading}
+        <p>Cargando...</p>
+    {:else if error}
+        <p style="color: red;">{error}</p>
+    {:else if missingProducts.length === 0}
+        <p>No hay productos faltantes.</p>
+    {:else}
+        <table style="width: 100%;">
+            <thead>
                 <tr>
-                    <td>{product.id}</td>
-                    <td>{product.nombre}</td>
-                    <td>{product.cantidadFaltante}</td>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cantidad Faltante</th>
                 </tr>
-            {/each}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {#each missingProducts as product}
+                    <tr>
+                        <td>{product.id}</td>
+                        <td>{product.name}</td>
+                        <td>{product.missingAmount}</td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
+    {/if}
 </div>
+
+

@@ -19,6 +19,7 @@
 
     <button on:click={() => {redir("ProductosAReponer")}}>Listado de productos a reponer</button>
     
+    <button on:click={() => {redir("CalculoModeloInventario")}}>Calcular modelo de inventario</button>
 
     <slot/>
 </div>
