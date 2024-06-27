@@ -65,6 +65,8 @@
       <p>Costo de compra: {product.orderCost}</p>
       <p>Costo de almacenamiento: {product.storageCost}</p>
       <p>Costo de unidad: {product.unitCost}</p>
+      <p>Demanda: {product.productDemand}</p>
+
 
       <!-- Botones para volver, modificar, dar de baja/restaurar y eliminar -->
       <div style="float: right;">

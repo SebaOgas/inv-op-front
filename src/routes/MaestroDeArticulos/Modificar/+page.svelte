@@ -65,7 +65,7 @@
         if (updatedProduct) {
             if (name === 'productFamilyId') {
                 updatedProduct.productFamilyId = parseInt(value, 10);
-            } else if (['storageCost', 'orderCost', 'unitCost', 'stock'].includes(name)) {
+            } else if (['storageCost', 'orderCost', 'unitCost'].includes(name)) {
                 updatedProduct = { ...updatedProduct, [name]: parseFloat(value) };
             } else {
                 updatedProduct = { ...updatedProduct, [name]: value };
@@ -100,27 +100,27 @@
             </div>
             <div>
                 <label for="orderCost">Costo de Compra:</label>
-                <input type="number" id="orderCost" name="orderCost" bind:value={updatedProduct.orderCost} on:input={handleInputChange} step="0.01" />
+                <input type="number" id="orderCost" name="orderCost" bind:value={updatedProduct.orderCost} on:input={handleInputChange} step="0.01" min="0" />
             </div>
             <div>
                 <label for="storageCost">Costo de almacenamiento:</label>
-                <input type="number" id="storageCost" name="storageCost" bind:value={updatedProduct.storageCost} on:input={handleInputChange} step="0.01" />
+                <input type="number" id="storageCost" name="storageCost" bind:value={updatedProduct.storageCost} on:input={handleInputChange} step="0.01" min="0" />
             </div>
             <div>
                 <label for="unitCost">Costo por unidad:</label>
-                <input type="number" id="unitCost" name="unitCost" bind:value={updatedProduct.unitCost} on:input={handleInputChange} step="0.01" />
+                <input type="number" id="unitCost" name="unitCost" bind:value={updatedProduct.unitCost} on:input={handleInputChange} step="0.01" min="0" />
             </div>
             <div>
                 <label for="stock">Stock:</label>
-                <input type="number" id="stock" name="stock" bind:value={updatedProduct.stock} />
+                <input type="number" id="stock" name="stock" bind:value={updatedProduct.stock} min="0" />
             </div>
             <div>
                 <label for="stock">Stock máximo:</label>
-                <input type="number" id="maxStock" name="maxStock" bind:value={updatedProduct.maxStock} />
+                <input type="number" id="maxStock" name="maxStock" bind:value={updatedProduct.maxStock} min="0" />
             </div>
             <div>
                 <label for="stock">Demanda:</label>
-                <input type="number" id="productDemand" name="productDemand" bind:value={updatedProduct.productDemand} />
+                <input type="number" id="productDemand" name="productDemand" bind:value={updatedProduct.productDemand} min="0" />
             </div>
             <button type="submit">Guardar</button>
             <button type="button" on:click={() => redir('')}>Cancelar</button>
