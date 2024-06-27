@@ -24,4 +24,6 @@ export interface CreateProductRequest {
     orderCost: number;
     unitCost: number;
     stock: number;
+    productDemand: number;
+    maxStock: number;
 }
