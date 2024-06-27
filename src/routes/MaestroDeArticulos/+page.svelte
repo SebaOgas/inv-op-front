@@ -26,24 +26,24 @@
     }
 
     async function deleteOrRestoreProduct(product: ProductResponseDto) {
-    if (product.isDeleted) {
-        // Restaurar el producto
-        restoreProduct(product);
-    } else {
-        // Eliminar el producto
-        const confirmacion = confirm('¿Estás seguro de que deseas dar de baja este producto?');
-        if (confirmacion) {
-            try {
-                await ProductService.products.delete(product.productId);
-                alert('Producto dado de baja correctamente.');
-                fetchProducts(); // Actualizar la lista después de dar de baja
-            } catch (error) {
-                console.error('Error al dar de baja producto:', error);
-                alert('Error al dar de baja el producto: ' + error.message);
+        if (product.isDeleted) {
+            // Restaurar el producto
+            restoreProduct(product);
+        } else {
+            // Eliminar el producto
+            const confirmacion = confirm('¿Estás seguro de que deseas dar de baja este producto?');
+            if (confirmacion) {
+                try {
+                    await ProductService.products.delete(product.productId);
+                    alert('Producto dado de baja correctamente.');
+                    fetchProducts(); // Actualizar la lista después de dar de baja
+                } catch (error) {
+                    console.error('Error al dar de baja producto:', error);
+                    alert('Error al dar de baja el producto: ' + error.message);
+                }
             }
         }
     }
-}
 
     onMount(() => {
         fetchProducts();
@@ -62,7 +62,6 @@
     </label>
     <button on:click={() => redir('CrearProducto')} class="bg-dark text-lighter" style="margin-left: 10px;">Crear</button>
     <button on:click={() => redir('Familias')} class="bg-dark text-lighter" style="margin-left: 10px;">Ver Familias</button>
-
 </div>
 
 <div style="overflow-x: auto;">
@@ -75,6 +74,7 @@
                 <th>Familia</th>
                 <th>Modelo</th>
                 <th>Stock</th>
+                <th>Cantidad vendida</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -84,10 +84,11 @@
                     <tr>
                         <td>{product.productId}</td>
                         <td>{product.productName}</td>
-                        <td>{product.productDescription}</td>
+                        <td>{product.productDescription !== null ? product.productDescription : ''}</td>
                         <td>{product.productFamilyName}</td>
                         <td>{product.inventoryModelName}</td>
                         <td>{product.stock}</td>
+                        <td>{product.totalHistoricDemand}</td>
                         <td>
                             {#if !product.isDeleted}
                                 <button on:click={() => redir(`Modificar?id=${product.productId}`)}>Modificar</button>

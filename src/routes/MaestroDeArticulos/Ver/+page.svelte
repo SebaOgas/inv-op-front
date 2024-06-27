@@ -58,7 +58,7 @@
 <div>
   {#if product}
       <h2>{product.productName}</h2>
-      <p>Descripción: {product.productDescription}</p>
+      <p>Descripción: {product.productDescription !== null ? product.productDescription : ''}</p>
       <p>Familia: {product.productFamilyName}</p>
       <p>Modelo: {product.inventoryModelName}</p>
       <p>Stock: {product.stock}</p>
@@ -66,6 +66,7 @@
       <p>Costo de almacenamiento: {product.storageCost}</p>
       <p>Costo de unidad: {product.unitCost}</p>
       <p>Demanda: {product.productDemand}</p>
+      <p>Cantidad vendida: {product.totalHistoricDemand}</p>
 
 
       <!-- Botones para volver, modificar, dar de baja/restaurar y eliminar -->
