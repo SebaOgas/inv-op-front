@@ -51,7 +51,7 @@
 						<td>{format(sale.saleDate, 'dd/MM/yyyy')}</td>
 						<td>{sale.productName}</td>
 						<td>{sale.quantity}</td>
-						<td><a href="/Ventas/{sale.saleId}">Ver</a></td>
+						<td><button on:click={() => redir(`/Ventas/${sale.saleId}`)}>Ver</button></td>
 					</tr>
 				{/each}
 			{:else}

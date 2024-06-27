@@ -1,10 +1,20 @@
 <script lang="ts">
     import { format } from 'date-fns';
+	import { PurchaseOrderStatusEnum } from '../PurchaseOrderStatusEnum';
 	export let data;
-
+    
     function redir(url: string) {
         window.location.href = url;
     }
+
+    function parseStatus(status: string){
+		// console.log(status);
+		switch (status) {
+			case PurchaseOrderStatusEnum.OPEN: return "Abierta";
+			case PurchaseOrderStatusEnum.CLOSED: return "Cerrada";
+			default: return '';
+		}
+	}
 
 </script>
 <div class="container-fluid">
@@ -22,9 +32,15 @@
             </div>
         </div>
         <div class="mb-3 row">
+            <label for="orderQuantity" class="col-sm-4 col-form-label">Cantidad pedida</label>
+            <div class="col-sm-4">
+            <input type="text" readonly class="form-control" name="orderQuantity" value="{data.purchaseOrder.orderQuantity}">
+            </div>
+        </div>
+        <div class="mb-3 row">
             <label for="purchaseOrderStatus" class="col-sm-4 col-form-label">Estado de la orden</label>
             <div class="col-sm-4">
-            <input type="text" readonly class="form-control" name="purchaseOrderStatus" value="{data.purchaseOrder.purchaseOrderStatus}">
+            <input type="text" readonly class="form-control" name="purchaseOrderStatus" value="{parseStatus(data.purchaseOrder.purchaseOrderStatus)}">
             </div>
         </div>
         <div class="mb-3 row">

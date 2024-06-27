@@ -6,11 +6,13 @@ export interface ProductResponseDto {
     productFamilyName: string;
     inventoryModelName: string;
     stock: number;
-    safeStock: number;
-    orderLimit: number;
-    optimalBatch: number;
+    storageCost: number;
+    orderCost: number;
+    unitCost: number;
     isDeleted: boolean;
     productFamilyId: number;
+    productDemand: number;
+    maxStock: number;
 
 }
 
@@ -18,8 +20,8 @@ export interface CreateProductRequest {
     productName: string;
     productDescription: string;
     productFamilyId: number;
-    optimalBatch: number;
-    orderLimit: number;
-    safeStock: number;
+    storageCost: number;
+    orderCost: number;
+    unitCost: number;
     stock: number;
 }
