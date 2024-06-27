@@ -61,6 +61,8 @@
         Mostrar eliminados
     </label>
     <button on:click={() => redir('CrearProducto')} class="bg-dark text-lighter" style="margin-left: 10px;">Crear</button>
+    <button on:click={() => redir('Familias')} class="bg-dark text-lighter" style="margin-left: 10px;">Ver Familias</button>
+
 </div>
 
 <div style="overflow-x: auto;">
@@ -73,7 +75,6 @@
                 <th>Familia</th>
                 <th>Modelo</th>
                 <th>Stock</th>
-                <th>Stock mínimo</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -87,7 +88,6 @@
                         <td>{product.productFamilyName}</td>
                         <td>{product.inventoryModelName}</td>
                         <td>{product.stock}</td>
-                        <td>{product.safeStock}</td>
                         <td>
                             {#if !product.isDeleted}
                                 <button on:click={() => redir(`Modificar?id=${product.productId}`)}>Modificar</button>
