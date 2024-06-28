@@ -98,7 +98,9 @@
 								<!-- <button on:click={() => redir(`/OrdenDeCompra{purchaseOrder.purchaseOrderId}`)}>Modificar</button> -->
 								<button on:click={() => redir(`/OrdenDeCompra/${purchaseOrder.purchaseOrderId}`)}>Ver</button>
 								<!-- <button on:click={() => redir(`/OrdenDeCompra/${purchaseOrder.purchaseOrderId}`)} style="background-color: green; color: aliceblue;">Completar</button> -->
+								{#if purchaseOrder.purchaseOrderStatus !== PurchaseOrderStatusEnum.CLOSED}
 								<button on:click={() => closePurchaseOrder(purchaseOrder.purchaseOrderId)} style="background-color: green; color: aliceblue;">Completar</button>
+								{/if}
 							</td>
 						</tr>
 					{/if}

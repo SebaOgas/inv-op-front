@@ -41,11 +41,13 @@
             </thead>
             <tbody>
                 {#each restockProducts as product}
-                    <tr>
-                        <td>{product.idRestockProduct}</td>
-                        <td>{product.nameRestockProduct}</td>
-                        <td>{product.optimalBatch}</td>
-                    </tr>
+                {#if product.optimalBatch > 0}
+                <tr>
+                    <td>{product.idRestockProduct}</td>
+                    <td>{product.nameRestockProduct}</td>
+                    <td>{product.optimalBatch}</td>
+                </tr>
+                {/if}
                 {/each}
             </tbody>
         </table>
