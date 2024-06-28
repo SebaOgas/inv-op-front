@@ -1,8 +1,8 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { ProductService } from "../ProductService";
-    import type { ProductResponseDto, CreateProductRequest, ProductFamilyDto } from "../DTOProducts";
-
+    import type { ProductResponseDto, CreateProductRequest } from "../DTOProducts";
+    import type { ProductFamilyDto } from "../DTOProductFamily";
     let product: ProductResponseDto | null = null;
     let updatedProduct: CreateProductRequest | null = null;
     let productFamilies: ProductFamilyDto[] = [];
@@ -15,10 +15,12 @@
                 productName: product.productName,
                 productDescription: product.productDescription,
                 productFamilyId: product.productFamilyId, 
-                optimalBatch: product.optimalBatch,
-                orderLimit: product.orderLimit,
-                safeStock: product.safeStock,
+                storageCost: product.storageCost,
+                unitCost: product.unitCost,
+                orderCost: product.orderCost,
                 stock: product.stock,
+                maxStock: product.maxStock,
+                productDemand: product.productDemand
             };
         } catch (error) {
             console.error("Error fetching product:", error);
@@ -62,7 +64,9 @@
 
         if (updatedProduct) {
             if (name === 'productFamilyId') {
-                updatedProduct.productFamilyId = parseInt(value, 10); // Parse the value to number if necessary
+                updatedProduct.productFamilyId = parseInt(value, 10);
+            } else if (['storageCost', 'orderCost', 'unitCost'].includes(name)) {
+                updatedProduct = { ...updatedProduct, [name]: parseFloat(value) };
             } else {
                 updatedProduct = { ...updatedProduct, [name]: value };
             }
@@ -95,20 +99,28 @@
                 </select>
             </div>
             <div>
-                <label for="optimalBatch">Lote Óptimo:</label>
-                <input type="number" id="optimalBatch" name="optimalBatch" bind:value={updatedProduct.optimalBatch} on:input={handleInputChange} />
+                <label for="orderCost">Costo de Compra:</label>
+                <input type="number" id="orderCost" name="orderCost" bind:value={updatedProduct.orderCost} on:input={handleInputChange} step="0.01" min="0" />
             </div>
             <div>
-                <label for="orderLimit">Límite de Orden:</label>
-                <input type="number" id="orderLimit" name="orderLimit" bind:value={updatedProduct.orderLimit} on:input={handleInputChange} />
+                <label for="storageCost">Costo de almacenamiento:</label>
+                <input type="number" id="storageCost" name="storageCost" bind:value={updatedProduct.storageCost} on:input={handleInputChange} step="0.01" min="0" />
             </div>
             <div>
-                <label for="safeStock">Stock Seguro:</label>
-                <input type="number" id="safeStock" name="safeStock" bind:value={updatedProduct.safeStock} on:input={handleInputChange} />
+                <label for="unitCost">Costo por unidad:</label>
+                <input type="number" id="unitCost" name="unitCost" bind:value={updatedProduct.unitCost} on:input={handleInputChange} step="0.01" min="0" />
             </div>
             <div>
                 <label for="stock">Stock:</label>
-                <input type="number" id="stock" name="stock" bind:value={updatedProduct.stock} on:input={handleInputChange} />
+                <input type="number" id="stock" name="stock" bind:value={updatedProduct.stock} min="0" />
+            </div>
+            <div>
+                <label for="stock">Stock máximo:</label>
+                <input type="number" id="maxStock" name="maxStock" bind:value={updatedProduct.maxStock} min="0" />
+            </div>
+            <div>
+                <label for="stock">Demanda:</label>
+                <input type="number" id="productDemand" name="productDemand" bind:value={updatedProduct.productDemand} min="0" />
             </div>
             <button type="submit">Guardar</button>
             <button type="button" on:click={() => redir('')}>Cancelar</button>

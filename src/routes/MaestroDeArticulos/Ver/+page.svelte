@@ -47,13 +47,10 @@
   function confirmarEliminar() {
       const confirmacion = confirm("¿Estás seguro de que deseas eliminar este elemento?");
       if (confirmacion) {
-          // Lógica para eliminar el producto (debes implementarla en ProductService)
-          // Por ejemplo:
-          // await ProductService.products.delete(product.productId);
-          alert("Producto eliminado correctamente."); // Solo un ejemplo de alerta
-          redir(''); // Redirigir a la página principal después de eliminar
+
+          alert("Producto eliminado correctamente."); 
+          redir(''); 
       } else {
-          // Si el usuario cancela la eliminación, no haces nada
       }
   }
 </script>
@@ -61,13 +58,16 @@
 <div>
   {#if product}
       <h2>{product.productName}</h2>
-      <p>Descripción: {product.productDescription}</p>
+      <p>Descripción: {product.productDescription !== null ? product.productDescription : ''}</p>
       <p>Familia: {product.productFamilyName}</p>
       <p>Modelo: {product.inventoryModelName}</p>
       <p>Stock: {product.stock}</p>
-      <p>Stock Óptimo: {product.optimalBatch}</p>
-      <p>Límite de Orden: {product.orderLimit}</p>
-      <p>Stock Seguro: {product.safeStock}</p>
+      <p>Costo de compra: {product.orderCost}</p>
+      <p>Costo de almacenamiento: {product.storageCost}</p>
+      <p>Costo de unidad: {product.unitCost}</p>
+      <p>Demanda: {product.productDemand}</p>
+      <p>Cantidad vendida: {product.totalHistoricDemand}</p>
+
 
       <!-- Botones para volver, modificar, dar de baja/restaurar y eliminar -->
       <div style="float: right;">

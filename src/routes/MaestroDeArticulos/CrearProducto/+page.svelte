@@ -7,10 +7,12 @@
         productName: '',
         productDescription: '',
         productFamilyId: 0,
-        optimalBatch: 0,
-        orderLimit: 0,
-        safeStock: 0,
-        stock: 0
+        storageCost: 0,
+        orderCost: 0,
+        unitCost: 0,
+        stock: 0,
+        productDemand: 0,
+        maxStock: 0
     };
 
     let productFamilies: ProductFamilyDto[] = [];
@@ -44,10 +46,14 @@
         const target = event.target as HTMLInputElement;
         const { name, value } = target;
 
-        if (name === 'productFamilyId') {
-            newProduct.productFamilyId = parseInt(value, 10); // Parse the value to number if necessary
-        } else {
-            newProduct = { ...newProduct, [name]: value };
+        if (newProduct) {
+            if (name === 'productFamilyId') {
+                newProduct.productFamilyId = parseInt(value, 10);
+            } else if (['storageCost', 'orderCost', 'unitCost', 'stock', 'maxStock', 'productDemand'].includes(name)) {
+                newProduct = { ...newProduct, [name]: parseFloat(value) };
+            } else {
+                newProduct = { ...newProduct, [name]: value };
+            }
         }
     }
 </script>
@@ -73,20 +79,28 @@
             </select>
         </div>
         <div>
-            <label for="optimalBatch">Lote Óptimo:</label>
-            <input type="number" id="optimalBatch" name="optimalBatch" bind:value={newProduct.optimalBatch} on:input={handleInputChange} required />
+            <label for="storageCost">Costo de almacenamiento:</label>
+            <input type="number" id="storageCost" name="storageCost" bind:value={newProduct.storageCost} on:input={handleInputChange} step="0.01" min="0" required />
         </div>
         <div>
-            <label for="orderLimit">Límite de Orden:</label>
-            <input type="number" id="orderLimit" name="orderLimit" bind:value={newProduct.orderLimit} on:input={handleInputChange} required />
+            <label for="orderCost">Costo de compra:</label>
+            <input type="number" id="orderCost" name="orderCost" bind:value={newProduct.orderCost} on:input={handleInputChange} step="0.01" min="0" required />
         </div>
         <div>
-            <label for="safeStock">Stock Seguro:</label>
-            <input type="number" id="safeStock" name="safeStock" bind:value={newProduct.safeStock} on:input={handleInputChange} required />
+            <label for="unitCost">Costo por unidad:</label>
+            <input type="number" id="unitCost" name="unitCost" bind:value={newProduct.unitCost} on:input={handleInputChange} step="0.01" min="0" required />
         </div>
         <div>
             <label for="stock">Stock:</label>
-            <input type="number" id="stock" name="stock" bind:value={newProduct.stock} on:input={handleInputChange} required />
+            <input type="number" id="stock" name="stock" bind:value={newProduct.stock} on:input={handleInputChange} min="0" required />
+        </div>
+        <div>
+            <label for="maxStock">Stock máximo:</label>
+            <input type="number" id="maxStock" name="maxStock" bind:value={newProduct.maxStock} on:input={handleInputChange} min="0" required />
+        </div>
+        <div>
+            <label for="productDemand">Demanda:</label>
+            <input type="number" id="productDemand" name="productDemand" bind:value={newProduct.productDemand} on:input={handleInputChange} min="0" required />
         </div>
         <button type="submit">Crear Producto</button>
         <button type="button" on:click={() => window.location.href = "/MaestroDeArticulos"}>Cancelar</button>
