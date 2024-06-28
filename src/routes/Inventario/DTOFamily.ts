@@ -1,5 +1,5 @@
 export interface DTOFamily {
-    id: number;
-    name: string;
-    inventoryModel: string;
+    productFamilyId: number;
+    productFamilyName: string;
+    inventoryModelName: string;
 }

@@ -42,9 +42,9 @@
             <tbody>
                 {#each restockProducts as product}
                     <tr>
-                        <td>{product.id}</td>
-                        <td>{product.name}</td>
-                        <td>{product.stock}</td>
+                        <td>{product.idRestockProduct}</td>
+                        <td>{product.nameRestockProduct}</td>
+                        <td>{product.optimalBatch}</td>
                     </tr>
                 {/each}
             </tbody>

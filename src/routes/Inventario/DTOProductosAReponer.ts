@@ -1,5 +1,5 @@
 export interface DTOProductosAReponer {
-    id: number;
-    name: string;
-    stock: number;
+    idRestockProduct: number;
+    nameRestockProduct: string;
+    optimalBatch: number;
 }

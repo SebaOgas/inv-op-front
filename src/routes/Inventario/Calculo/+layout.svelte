@@ -1,3 +1,4 @@
+
 <script lang="ts">
     function redir(url: string) {
         window.location.href = "/CalculoModeloInventario/" + url;
