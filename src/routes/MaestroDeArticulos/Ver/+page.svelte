@@ -67,6 +67,7 @@
       <p>Costo de unidad: {product.unitCost}</p>
       <p>Demanda: {product.productDemand}</p>
       <p>Cantidad vendida: {product.totalHistoricDemand}</p>
+      <p>Stock máximo {product.maxStock}</p>
 
 
       <!-- Botones para volver, modificar, dar de baja/restaurar y eliminar -->

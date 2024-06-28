@@ -4,37 +4,50 @@
     import type { DTOProductosAReponer } from '../DTOProductosAReponer';
 	import { InventarioService } from '../InventarioService';
 
-    let productosAReponer: DTOProductosAReponer[] = [];
-
-    onMount(() => {
-		getProductosAReponer();
-	});
-
-    async function getProductosAReponer() {
-        productosAReponer = await InventarioService.productosAReponer.getList();
-    }
+    let restockProducts: DTOProductosAReponer[] = [];
+    let error: string | null = null;
+    let isLoading = true;
+    
+    onMount(async () => {
+        try {
+            restockProducts = await InventarioService.getRestockProducts();
+        } catch (err) {
+            
+        } finally {
+            isLoading = false;
+        }
+    });
 
 </script>
 
 
 <div style="overflow-x: auto;">
-    <h3>Productos A Reponer:</h3>
-    <table style="width: 100%;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Cantidad</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each productosAReponer as product}
+    <h1>Productos a Reponer</h1>
+
+    {#if isLoading}
+        <p>Cargando...</p>
+    {:else if error}
+        <p style="color: red;">{error}</p>
+    {:else if restockProducts.length === 0}
+        <p>No hay productos a reponer.</p>
+    {:else}
+        <table style="width: 100%;">
+            <thead>
                 <tr>
-                    <td>{product.id}</td>
-                    <td>{product.nombre}</td>
-                    <td>{product.cantidadAReponer}</td>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cantidad a Reponer</th>
                 </tr>
-            {/each}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {#each restockProducts as product}
+                    <tr>
+                        <td>{product.idRestockProduct}</td>
+                        <td>{product.nameRestockProduct}</td>
+                        <td>{product.optimalBatch}</td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
+    {/if}
 </div>
